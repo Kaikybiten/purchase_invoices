@@ -11,7 +11,6 @@ public class PurchaseInvoicesApplication {
 
 		ReaderHTML.getProducts(url);
 
-
 	}
 
 
