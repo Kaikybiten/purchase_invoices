@@ -1,4 +1,4 @@
-package model;
+package com.example.purchase_invoices.model;
 
 import jakarta.persistence.*;
 

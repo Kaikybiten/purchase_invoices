@@ -1,6 +1,6 @@
-package scrapper;
+package com.example.purchase_invoices.scrapper;
 
-import model.RecordedPurchases;
+import com.example.purchase_invoices.model.RecordedPurchases;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;

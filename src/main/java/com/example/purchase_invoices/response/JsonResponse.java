@@ -1,6 +1,7 @@
-package response;
+package com.example.purchase_invoices.response;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 
 public class JsonResponse<T> {
@@ -10,11 +11,23 @@ public class JsonResponse<T> {
     private LocalDateTime timestamp;
     private List<T> data;
 
+    private JsonResponse(boolean success, String message, T data) {
+        this.success = success;
+        this.message = message;
+
+        this.data = new ArrayList<>();
+        this.data.add(data);
+    }
+
     private JsonResponse(boolean success, String message, List<T> data) {
         this.success = success;
         this.message = message;
         this.timestamp = LocalDateTime.now();
         this.data = data;
+    }
+
+    public static <T> JsonResponse<T> success(T data) {
+        return new JsonResponse<>(true, "Operação realizada com sucesso", data);
     }
 
     public static <T> JsonResponse<T> success(List<T> data) {

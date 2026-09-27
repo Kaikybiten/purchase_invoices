@@ -1,4 +1,4 @@
-package response;
+package com.example.purchase_invoices.response;
 
 public class DataError {
 

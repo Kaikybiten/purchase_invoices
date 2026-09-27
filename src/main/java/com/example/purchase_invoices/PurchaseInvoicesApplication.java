@@ -1,7 +1,7 @@
 package com.example.purchase_invoices;
 
 import org.springframework.boot.autoconfigure.SpringBootApplication;
-import scrapper.ReaderHTML;
+import com.example.purchase_invoices.scrapper.ReaderHTML;
 
 @SpringBootApplication
 public class PurchaseInvoicesApplication {
@@ -13,6 +13,4 @@ public class PurchaseInvoicesApplication {
 		ReaderHTML.getProducts(url);
 
 	}
-
-
 }
