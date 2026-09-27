@@ -3,19 +3,18 @@ package com.example.purchase_invoices.controller;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import com.example.purchase_invoices.model.Product;
 import com.example.purchase_invoices.response.JsonResponse;
 import com.example.purchase_invoices.service.ProductService;
 
+import com.example.purchase_invoices.model.InvoiceUrlRequest;
+
 import java.util.List;
 
 @RestController
-@RequestMapping("product")
+@RequestMapping("/product")
 public class ProductController {
 
     @Autowired
@@ -37,5 +36,11 @@ public class ProductController {
     public ResponseEntity<JsonResponse<Product>> getProductById(@PathVariable Long id) {
         Product product = productService.findById(id);
         return ResponseEntity.status(HttpStatus.OK).body(JsonResponse.success(product));
+    }
+
+    @PostMapping("/invoice")
+    public ResponseEntity<JsonResponse<Product>> postProduct(@RequestBody InvoiceUrlRequest) {
+        System.out.println(invoiceJson);
+        return ResponseEntity.status(HttpStatus.OK).body(JsonResponse.success(new Product()));
     }
 }

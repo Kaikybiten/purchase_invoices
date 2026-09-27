@@ -1,9 +1,12 @@
 package com.example.purchase_invoices.response;
 
+import com.fasterxml.jackson.annotation.JsonPropertyOrder;
+
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
+@JsonPropertyOrder({"success", "message", "timestamp", "data"})
 public class JsonResponse<T> {
 
     private boolean success;
