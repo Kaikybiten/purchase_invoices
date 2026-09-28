@@ -1,5 +1,6 @@
 package com.example.purchase_invoices.controller;
 
+import com.example.purchase_invoices.scrapper.ReaderHTML;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -39,8 +40,19 @@ public class ProductController {
     }
 
     @PostMapping("/invoice")
-    public ResponseEntity<JsonResponse<Product>> postProduct(@RequestBody InvoiceUrlRequest) {
-        System.out.println(invoiceJson);
-        return ResponseEntity.status(HttpStatus.OK).body(JsonResponse.success(new Product()));
+    public ResponseEntity<JsonResponse<Product>> postProduct(
+            @RequestBody InvoiceUrlRequest invoiceUrlRequest
+    ) {
+        List<Product> productList = ReaderHTML.getProducts(invoiceUrlRequest.getUrl());
+
+        if (productList.isEmpty()) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(
+                    JsonResponse.error("Nenhum produto localizado na nota informada.")
+            );
+        }
+
+        List<Product> productsSave = productService.saveValids(productList);
+
+        return ResponseEntity.status(HttpStatus.OK).body(JsonResponse.success(productsSave));
     }
 }

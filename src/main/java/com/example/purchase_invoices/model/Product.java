@@ -3,15 +3,14 @@ package com.example.purchase_invoices.model;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import jakarta.persistence.*;
 
-import jakarta.validation.constraints.Max;
-import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.NotNull;
-import jakarta.validation.constraints.Positive;
+import jakarta.validation.constraints.*;
+
+import java.time.LocalDate;
 
 
 @Entity
 @Table(name= "product")
-@JsonPropertyOrder({"id", "name", "unitPrice", "measure", "code"})
+@JsonPropertyOrder({ "id", "valid", "name", "unitPrice", "measure", "code" })
 public class Product {
 
     @Id
@@ -20,22 +19,29 @@ public class Product {
 
     @Column(name = "code")
     @NotBlank(message = "{product.code.notBlank}")
-    @Max(value = 30, message = "{product.code.max}")
+    @Size(max = 30, message = "{product.code.max}")
     private String code;
 
     @Column(name = "name")
     @NotBlank(message = "{product.name.notBlank}")
-    @Max(value = 30, message = "{product.name.max}")
+    @Size(max = 30, message = "{product.name.max}")
     private String name;
 
     @Column(name = "measure")
-    @Max(value = 10,message = "{product.measure.max}")
+    @Size(max = 10,message = "{product.measure.max}")
     private String measure;
 
     @Column(name = "unit_price")
     @NotNull(message = "{product.unitPrice.notNull}")
     @Positive(message = "{product.unitPrice.positive}")
     private Double unitPrice;
+
+    @Column(name = "purchase_date")
+    private LocalDate purchaseDate;
+
+    // Exclui o campo do mapeamento JPA
+    @Transient
+    private boolean valid = false;
 
     public Product() {
     }
@@ -52,4 +58,7 @@ public class Product {
     public String getName() { return name; }
     public String getMeasure() { return measure; }
     public Double getUnitPrice() { return unitPrice; }
+    public LocalDate getPurchaseDate() { return purchaseDate; }
+    public boolean isValid() { return valid; }
+    public void setValid(boolean valid) { this.valid = valid; }
 }

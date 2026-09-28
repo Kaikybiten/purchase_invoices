@@ -10,6 +10,7 @@ import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
+import java.net.MalformedURLException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -24,6 +25,15 @@ import javax.swing.text.html.parser.Entity;
 @RestControllerAdvice
 public class GlobalExceptionHandler {
 
+    @ExceptionHandler(MalformedURLException.class)
+    public ResponseEntity<JsonResponse<DataError>> handleMalformedURLException(
+            MalformedURLException exception
+    ) {
+
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(
+                JsonResponse.error(exception.getMessage())
+        );
+    }
 
     // Metodo para capturar exceções de requisão não localizada
     @ExceptionHandler(MethodNotFoundException.class)

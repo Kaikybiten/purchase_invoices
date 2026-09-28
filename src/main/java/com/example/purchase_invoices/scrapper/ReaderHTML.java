@@ -1,5 +1,6 @@
 package com.example.purchase_invoices.scrapper;
 
+import com.example.purchase_invoices.model.Product;
 import com.example.purchase_invoices.model.RecordedPurchases;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
@@ -81,9 +82,13 @@ public class ReaderHTML {
         return "0";
     }
 
-    public static void getProducts(String url) {
+    public static List<Product> getProducts(String url) {
+
+        System.out.println(url);
+
         List<RecordedPurchases> recordedPurchases = new ArrayList<>();
 
+        List<Product> products = new ArrayList<>();
         try {
             Document document = Jsoup.connect(url).get();
 
@@ -104,20 +109,18 @@ public class ReaderHTML {
                 double quantity = convertedDouble( validateRefQuantity(tr) );
                 double totalPrice = convertedDouble( readTd(tr, "span.valor") );
 
-                System.out.println("-----------");
-                System.out.println("Name: " + name);
-                System.out.println("Code: " + code);
-                System.out.println("Measure: " + measure);
-                System.out.println("UnitPrice: " + unitPrice);
+                System.out.println("name=[" + name + "] len=" + name.length());
+                System.out.println("code=[" + code + "] len=" + code.length());
+                System.out.println("measure=[" + measure + "] len=" + measure.length());
 
-                System.out.println("Quantity: " + quantity);
-                System.out.println("TotalPrice: " + totalPrice);
+                System.out.printf("%s - %s - %s - %.2f", name, code, measure, unitPrice);
+                products.add(new Product(name, code, measure, unitPrice));
             }
 
         } catch (IOException erro) {
             erro.printStackTrace();
-
         }
+        return products;
     }
 
 }

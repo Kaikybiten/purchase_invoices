@@ -6,7 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
-import java.util.Optional;
+
 
 import com.example.purchase_invoices.model.Product;
 
@@ -26,5 +26,17 @@ public class ProductService {
                 .orElseThrow(() -> new MethodNotFoundException(
                         String.format("Não foi possivel localizar nenhum produto com o id %d.", id))
                 );
+    }
+
+    public List<Product> saveValids(List<Product> products) {
+
+        products.forEach(product -> {
+                if (!productRepository.existsProduct(product.getCode(), product.getUnitPrice())) {
+                    product.setValid(true);
+                    productRepository.save(product);
+                }
+            }
+        );
+        return products;
     }
 }
