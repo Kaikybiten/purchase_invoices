@@ -8,6 +8,7 @@ import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 
 import java.io.IOException;
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
@@ -82,13 +83,10 @@ public class ReaderHTML {
         return "0";
     }
 
-    public static List<Product> getProducts(String url) {
-
-        System.out.println(url);
+    public static List<RecordedPurchases> getProducts(String url) {
 
         List<RecordedPurchases> recordedPurchases = new ArrayList<>();
 
-        List<Product> products = new ArrayList<>();
         try {
             Document document = Jsoup.connect(url).get();
 
@@ -104,23 +102,19 @@ public class ReaderHTML {
                 String name = readTd(tr, "span.txtTit");
                 String measure = validateRefMeasurement(tr);
 
-                double unitPrice = convertedDouble( validateRefAmount(tr) );
+                BigDecimal unitPrice = new BigDecimal(validateRefAmount(tr));
 
-                double quantity = convertedDouble( validateRefQuantity(tr) );
-                double totalPrice = convertedDouble( readTd(tr, "span.valor") );
+                BigDecimal quantity = new BigDecimal(validateRefQuantity(tr));
+                BigDecimal totalPrice = new BigDecimal( readTd(tr, "span.valor") );
 
-                System.out.println("name=[" + name + "] len=" + name.length());
-                System.out.println("code=[" + code + "] len=" + code.length());
-                System.out.println("measure=[" + measure + "] len=" + measure.length());
 
-                System.out.printf("%s - %s - %s - %.2f", name, code, measure, unitPrice);
-                products.add(new Product(name, code, measure, unitPrice));
+                recordedPurchases.add(new RecordedPurchases(new Product(), totalPrice, quantity));
             }
 
         } catch (IOException erro) {
             erro.printStackTrace();
         }
-        return products;
+        return recordedPurchases;
     }
 
 }

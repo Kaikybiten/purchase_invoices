@@ -5,7 +5,11 @@ import jakarta.el.MethodNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.math.BigDecimal;
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 
 import com.example.purchase_invoices.model.Product;
@@ -28,15 +32,19 @@ public class ProductService {
                 );
     }
 
-    public List<Product> saveValids(List<Product> products) {
 
-        products.forEach(product -> {
-                if (!productRepository.existsProduct(product.getCode(), product.getUnitPrice())) {
-                    product.setValid(true);
-                    productRepository.save(product);
-                }
-            }
-        );
-        return products;
+    public List<Object[]> findByCodes(List<String> codes) {
+        return productRepository.getAllByCodes(codes);
+    }
+
+    public List<Product> save (Product product) {
+
+        productRepository.save(product);
+
+        return new ArrayList<>(List.of(product));
+    }
+
+    public  List<Product> saveAll(List<Product> products) {
+        return productRepository.saveAll(products);
     }
 }

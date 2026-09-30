@@ -5,7 +5,9 @@ import jakarta.persistence.*;
 
 import jakarta.validation.constraints.*;
 
+import java.math.BigDecimal;
 import java.time.LocalDate;
+import java.util.Objects;
 
 
 @Entity
@@ -15,7 +17,7 @@ public class Product {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private long id;
+    private Long id;
 
     @Column(name = "code")
     @NotBlank(message = "{product.code.notBlank}")
@@ -31,10 +33,10 @@ public class Product {
     @Size(max = 10,message = "{product.measure.max}")
     private String measure;
 
-    @Column(name = "unit_price")
+    @Column(name = "unit_price", precision = 10, scale = 2, nullable = false)
     @NotNull(message = "{product.unitPrice.notNull}")
     @Positive(message = "{product.unitPrice.positive}")
-    private Double unitPrice;
+    private BigDecimal unitPrice;
 
     @Column(name = "purchase_date")
     private LocalDate purchaseDate;
@@ -46,7 +48,7 @@ public class Product {
     public Product() {
     }
 
-    public Product(String name, String code, String measure, Double unitPrice) {
+    public Product(String name, String code, String measure, BigDecimal unitPrice) {
         this.name = name;
         this.code = code;
         this.measure = measure;
@@ -57,8 +59,9 @@ public class Product {
     public String getCode() { return code; }
     public String getName() { return name; }
     public String getMeasure() { return measure; }
-    public Double getUnitPrice() { return unitPrice; }
+    public BigDecimal getUnitPrice() { return unitPrice; }
     public LocalDate getPurchaseDate() { return purchaseDate; }
     public boolean isValid() { return valid; }
     public void setValid(boolean valid) { this.valid = valid; }
+
 }
