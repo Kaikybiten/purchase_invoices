@@ -55,7 +55,7 @@ public class Product {
         this.unitPrice = unitPrice;
     }
 
-    public long getId() { return id; }
+    public Long getId() { return id; }
     public String getCode() { return code; }
     public String getName() { return name; }
     public String getMeasure() { return measure; }

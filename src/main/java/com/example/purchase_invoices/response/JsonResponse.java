@@ -17,7 +17,7 @@ public class JsonResponse<T> {
     private JsonResponse(boolean success, String message, T data) {
         this.success = success;
         this.message = message;
-
+        this.timestamp = LocalDateTime.now();
         this.data = new ArrayList<>();
         this.data.add(data);
     }

@@ -1,15 +1,12 @@
 package com.example.purchase_invoices.service;
 
 import com.example.purchase_invoices.repository.ProductRepository;
-import jakarta.el.MethodNotFoundException;
+import jakarta.persistence.EntityNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.math.BigDecimal;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 
 import com.example.purchase_invoices.model.Product;
@@ -27,14 +24,14 @@ public class ProductService {
 
     public Product findById(Long id) {
         return productRepository.findById(id)
-                .orElseThrow(() -> new MethodNotFoundException(
+                .orElseThrow(() -> new EntityNotFoundException(
                         String.format("Não foi possivel localizar nenhum produto com o id %d.", id))
                 );
     }
 
 
-    public List<Object[]> findByCodes(List<String> codes) {
-        return productRepository.getAllByCodes(codes);
+    public List<Product> findByCodeIn(List<String> codes) {
+        return productRepository.findByCodeIn(codes);
     }
 
     public List<Product> save (Product product) {

@@ -1,14 +1,20 @@
 package com.example.purchase_invoices.scrapper;
 
+import com.example.purchase_invoices.exception.InvoiceReadException;
 import com.example.purchase_invoices.model.Product;
 import com.example.purchase_invoices.model.RecordedPurchases;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
+import org.springframework.cglib.core.Local;
 
 import java.io.IOException;
 import java.math.BigDecimal;
+import java.math.RoundingMode;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
@@ -24,10 +30,8 @@ public class ReaderHTML {
 
     }
 
-    private static Double convertedDouble (String value) {
-        return Double.parseDouble(
-                value.replace(",", ".")
-        );
+    private static BigDecimal convertedDecimal (String value) {
+        return new BigDecimal(value.trim().replace(",", "."));
     }
 
     private static String readTd(Element tr, String query) {
@@ -83,6 +87,14 @@ public class ReaderHTML {
         return "0";
     }
 
+    private static LocalDate covertDate(Element doc) {
+        String dateText = readTd(doc, "span.timestampConsulta");
+
+        return LocalDateTime
+                .parse(dateText, DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm:ss"))
+                .toLocalDate();
+    }
+
     public static List<RecordedPurchases> getProducts(String url) {
 
         List<RecordedPurchases> recordedPurchases = new ArrayList<>();
@@ -92,27 +104,44 @@ public class ReaderHTML {
 
             Element element = document.getElementById("tabResult");
 
-            assert element != null;
+            if (element == null){
+                return recordedPurchases;
+            }
             Elements elements = element.select("tr");
+
+            LocalDate purchaseDate = covertDate(document);
 
             for (Element tr : elements) {
 
-                String code = validateRefCode(tr);
-
                 String name = readTd(tr, "span.txtTit");
+                String code = validateRefCode(tr);
                 String measure = validateRefMeasurement(tr);
+                BigDecimal unitPrice = convertedDecimal(validateRefAmount(tr));
 
-                BigDecimal unitPrice = new BigDecimal(validateRefAmount(tr));
-
-                BigDecimal quantity = new BigDecimal(validateRefQuantity(tr));
-                BigDecimal totalPrice = new BigDecimal( readTd(tr, "span.valor") );
+                BigDecimal quantity = convertedDecimal(validateRefQuantity(tr));
+                BigDecimal totalPrice = convertedDecimal( readTd(tr, "span.valor") );
 
 
-                recordedPurchases.add(new RecordedPurchases(new Product(), totalPrice, quantity));
+                BigDecimal allegedTotalPrice = unitPrice
+                        .multiply(quantity)
+                        .setScale(2, RoundingMode.HALF_UP);
+
+                if (allegedTotalPrice.compareTo(totalPrice) != 0) {
+                    continue;
+                }
+
+                recordedPurchases.add(new RecordedPurchases(
+                            new Product(name, code, measure, unitPrice),
+                            totalPrice, quantity, purchaseDate
+                        )
+                );
             }
 
         } catch (IOException erro) {
-            erro.printStackTrace();
+            throw  new InvoiceReadException(
+                    "Não foi possivel realizar a leitura da nota fiscal informada",
+                    erro
+            );
         }
         return recordedPurchases;
     }

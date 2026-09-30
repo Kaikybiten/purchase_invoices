@@ -1,7 +1,6 @@
 package com.example.purchase_invoices.controller;
 
 import com.example.purchase_invoices.model.InvoiceUrlRequest;
-import com.example.purchase_invoices.model.Product;
 import com.example.purchase_invoices.model.RecordedPurchases;
 import com.example.purchase_invoices.response.JsonResponse;
 import com.example.purchase_invoices.scrapper.ReaderHTML;
@@ -16,9 +15,9 @@ import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
 
-@RestController("/invoices")
-@RequestMapping
-public class RecordedPurchasesControllerr {
+@RestController
+@RequestMapping("/invoices")
+public class RecordedPurchasesController {
 
     @Autowired
     RecordedPurchasesService recordedPurchasesService;

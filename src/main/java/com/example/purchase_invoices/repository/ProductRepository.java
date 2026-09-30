@@ -10,6 +10,6 @@ import java.util.List;
 // Conexão com o banco de dados
 public interface ProductRepository extends JpaRepository<Product, Long> {
 
-    @Query(value = "SELECT code, unit_price WHERE code IN :codes", nativeQuery=true)
-    List<Object[]> getAllByCodes(@Param("codes") List<String> codes);
+    // Find by 'code' in (codes), Identifica 'code' em @Entity e utiliza a referencia para busca-lo no banco
+    List<Product> findByCodeIn(List<String> codes);
 }
