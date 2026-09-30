@@ -87,11 +87,31 @@ public class ReaderHTML {
         return "0";
     }
 
-    private static LocalDate covertDate(Element doc) {
-        String dateText = readTd(doc, "span.timestampConsulta");
+    private static LocalDate convertDate(Element doc) {
+
+        String dateText = readTd(doc, "ul.jqm-listview");
+
+        System.out.println(dateText);
+
+        Matcher matcher = validateMatcher(
+                dateText,
+                "\\d{2}/\\d{2}/\\d{4} \\d{2}:\\d{2}"
+        );
+
+
+        if (!matcher.find()) {
+            throw new InvoiceReadException(
+                    "Não foi possível localizar a data da nota fiscal.",
+                    null
+            );
+        }
+
+        String date = matcher.group();
+
+        System.out.println(date + " " + matcher.group());
 
         return LocalDateTime
-                .parse(dateText, DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm:ss"))
+                .parse(date, DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm"))
                 .toLocalDate();
     }
 
@@ -109,7 +129,8 @@ public class ReaderHTML {
             }
             Elements elements = element.select("tr");
 
-            LocalDate purchaseDate = covertDate(document);
+            LocalDate purchaseDate = convertDate(document);
+
 
             for (Element tr : elements) {
 
@@ -130,6 +151,7 @@ public class ReaderHTML {
                     continue;
                 }
 
+                System.out.println(purchaseDate);
                 recordedPurchases.add(new RecordedPurchases(
                             new Product(name, code, measure, unitPrice),
                             totalPrice, quantity, purchaseDate
