@@ -31,3 +31,14 @@ build/
 
 ### VS Code ###
 .vscode/
+
+# Environment
+.env
+
+# React / Node
+frontend/node_modules/
+frontend/dist/
+
+# OS
+.DS_Store
+Thumbs.db
