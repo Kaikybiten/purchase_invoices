@@ -45,7 +45,7 @@ public class Product {
     @Transient
     private boolean valid = false;
 
-    public Product() {
+    protected Product() {
     }
 
     public Product(String name, String code, String measure, BigDecimal unitPrice) {

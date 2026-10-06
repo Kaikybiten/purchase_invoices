@@ -1,6 +1,7 @@
 package com.example.purchase_invoices.scrapper;
 
 import com.example.purchase_invoices.exception.InvoiceReadException;
+import com.example.purchase_invoices.model.Invoice;
 import com.example.purchase_invoices.model.Product;
 import com.example.purchase_invoices.model.RecordedPurchases;
 import org.jsoup.Jsoup;
@@ -115,6 +116,11 @@ public class ReaderHTML {
                 .toLocalDate();
     }
 
+    private static String getCode(Element doc) {
+        String accessKey =readTd(doc, "ul.jqm-listview span.chave");
+        return accessKey.replaceAll("\\s+", "");
+    }
+
     public static List<RecordedPurchases> getProducts(String url) {
 
         List<RecordedPurchases> recordedPurchases = new ArrayList<>();
@@ -130,7 +136,9 @@ public class ReaderHTML {
             Elements elements = element.select("tr");
 
             LocalDate purchaseDate = convertDate(document);
+            String purchaseCode =  getCode(document);
 
+            Invoice invoice = new Invoice(purchaseCode, purchaseDate);
 
             for (Element tr : elements) {
 
@@ -151,11 +159,10 @@ public class ReaderHTML {
                     continue;
                 }
 
-                System.out.println(purchaseDate);
-                recordedPurchases.add(new RecordedPurchases(
-                            new Product(name, code, measure, unitPrice),
-                            totalPrice, quantity, purchaseDate
-                        )
+                Product product = new Product(name, code, measure, unitPrice);
+
+                recordedPurchases.add(
+                        new RecordedPurchases(invoice, product, totalPrice, quantity, purchaseDate)
                 );
             }
 

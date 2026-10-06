@@ -21,6 +21,10 @@ public class RecordedPurchases {
     @JoinColumn(name = "id_product")
     private Product product;
 
+    @ManyToOne
+    @JoinColumn(name = "id_invoice")
+    private Invoice invoice;
+
     @Column(name = "total_price")
     private BigDecimal totalPrice;
 
@@ -30,19 +34,26 @@ public class RecordedPurchases {
     @Column(name = "purchase_date")
     private LocalDate purchaseDate;
 
-    public RecordedPurchases(Product product, BigDecimal totalPrice, BigDecimal quantity, LocalDate purchaseDate) {
+    protected RecordedPurchases() {
+    }
 
+    public RecordedPurchases(
+            Invoice invoice, Product product, BigDecimal totalPrice, BigDecimal quantity, LocalDate purchaseDate
+    ) {
+
+        this.invoice = invoice;
+        this.product = product;
         this.totalPrice = totalPrice;
         this.quantity = quantity;
-        this.product = product;
         this.purchaseDate = purchaseDate;
     }
 
     public Long getId() { return id; }
-    public BigDecimal getTotalPrice() { return totalPrice; }
-    public BigDecimal getQuantity() { return quantity; }
-    public LocalDate getPurchaseDate() { return purchaseDate; }
     public Product getProduct() { return product; }
+    public Invoice getInvoice() {return invoice; }
+    public BigDecimal getTotalPrice() {return totalPrice;}
+    public BigDecimal getQuantity() {return quantity;}
+    public LocalDate getPurchaseDate() {return purchaseDate;}
 
     public void setProduct(Product product) { this.product = product; }
 }

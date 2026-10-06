@@ -1,45 +1,58 @@
-import React, { useEffect, useRef, useState } from "react";
-import { BrowserMultiFormatReader } from "@zxing/browser";
+import React, { useEffect, useRef } from "react";
+import { BrowserQRCodeReader } from "@zxing/browser";
 
-function Reader(setQrCode) {
+function Reader({ setQrCode, setActiveCam }) {
     const videoRef = useRef(null);
 
     useEffect(() => {
-        const reader = new BrowserMultiFormatReader();
-
         let controls;
+
+        // Cria leitor da ZXing
+        const reader = new BrowserQRCodeReader();
 
         async function startScanner() {
             try {
+                // Inicia a camera armazenando em uma variavel para controle
                 controls = await reader.decodeFromVideoDevice(
-                    undefined,
-                    videoRef.current,
+                    undefined, // deviceId da câmera; undefined = deixa a biblioteca escolher
+
+                    videoRef.current, // Elemento de video que receberá a câmera
+
+                    // Callback chamado quando um QR Code é detectado - 'result' contém o resultado da leitura
                     (result) => {
                         if (result) {
                             setQrCode(result.getText());
                         }
                     },
                 );
+
+                setActiveCam(true);
             } catch (error) {
                 console.error("Erro ao acessar a câmera:", error);
+                setActiveCam(false);
             }
         }
 
         startScanner();
 
+        // Quando o componente deixar de existir:
         return () => {
-            controls?.stop();
-            reader.reset();
+            controls?.stop(); // Para câmera
+            reader.reset(); // Reinicia leitor
+
+            setActiveCam(false);
         };
     }, []);
 
     return (
-        <video
-            ref={videoRef}
-            style={{ width: "100%", borderRadius: 8 }}
-            muted
-            playsInline
-        />
+        <div className="overflow-hidden rounded-xl bg-gray-500">
+            <video
+                ref={videoRef}
+                className="aspect-video w-full object-cover"
+                muted
+                playsInline
+            />
+        </div>
     );
 }
 

@@ -16,7 +16,7 @@ export async function postInvoices() {
 
     const responseData = await response.json();
 
-    console.log(responseData);
+    const data = responseData.data;
 
-    return responseData.data;
+    return data.products;
 }

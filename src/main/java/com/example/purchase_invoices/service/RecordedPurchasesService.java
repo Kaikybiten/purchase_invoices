@@ -1,5 +1,8 @@
 package com.example.purchase_invoices.service;
 
+import com.example.purchase_invoices.dto.InvoiceResponse;
+import com.example.purchase_invoices.dto.ProductPurchaseResponse;
+import com.example.purchase_invoices.model.Invoice;
 import com.example.purchase_invoices.model.Product;
 import com.example.purchase_invoices.model.RecordedPurchases;
 import com.example.purchase_invoices.repository.RecordedPurchasesRepository;
@@ -19,9 +22,17 @@ public class RecordedPurchasesService {
     @Autowired
     private ProductService productService;
 
+    @Autowired
+    private InvoiceService invoiceService;
+
     public List<RecordedPurchases> saveValidProduct(
             List<RecordedPurchases> recordedPurchases
     ) {
+
+        // Salvando nota
+        Invoice invoice = recordedPurchases.get(0).getInvoice();
+        invoiceService.save(invoice);
+
 
         List<Product> products = recordedPurchases.stream()
                 .map(RecordedPurchases::getProduct)
@@ -39,7 +50,7 @@ public class RecordedPurchasesService {
 
             Product product = purchase.getProduct();
 
-            // Verificação se produto já esta no banco
+            // Verificação se produto já está no banco
             Product existingProduct = existingProducts.stream()
                     .filter(existing -> {
 
@@ -68,6 +79,37 @@ public class RecordedPurchasesService {
         recordedPurchasesRepository.saveAll(recordedPurchases);
 
         return recordedPurchases;
+    }
+
+    public InvoiceResponse toResponse(
+            List<RecordedPurchases> purchases
+    ) {
+        Invoice invoice = purchases.get(0).getInvoice();
+
+        Invoice savedInvoice = invoiceService.save(invoice);
+
+        System.out.println("INVOICE ID: " + savedInvoice.getId());
+
+        List<ProductPurchaseResponse> products = purchases.stream()
+                .map(purchase -> {
+                    Product product = purchase.getProduct();
+
+                    return new ProductPurchaseResponse(
+                            product.getCode(),
+                            product.getName(),
+                            product.getMeasure(),
+                            product.getUnitPrice(),
+                            purchase.getTotalPrice(),
+                            purchase.getQuantity()
+                    );
+                })
+                .toList();
+
+        return new InvoiceResponse(
+                invoice.getAccessToken(),
+                invoice.getInvoiceEntryDate(),
+                products
+        );
     }
 
     public List<RecordedPurchases> saveAll(List<RecordedPurchases> recordedPurchases) {

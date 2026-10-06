@@ -1,5 +1,6 @@
 package com.example.purchase_invoices.controller;
 
+import com.example.purchase_invoices.dto.InvoiceResponse;
 import com.example.purchase_invoices.model.InvoiceUrlRequest;
 import com.example.purchase_invoices.model.RecordedPurchases;
 import com.example.purchase_invoices.response.JsonResponse;
@@ -8,10 +9,7 @@ import com.example.purchase_invoices.service.RecordedPurchasesService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
@@ -23,9 +21,10 @@ public class RecordedPurchasesController {
     RecordedPurchasesService recordedPurchasesService;
 
     @PostMapping
-    public ResponseEntity<JsonResponse<RecordedPurchases>> postProduct(
+    public ResponseEntity<JsonResponse<InvoiceResponse>> postProduct(
             @RequestBody InvoiceUrlRequest invoiceUrlRequest
     ) {
+
         List<RecordedPurchases> purchasesList = ReaderHTML.getProducts(invoiceUrlRequest.getUrl());
 
         if (purchasesList.isEmpty()) {
@@ -36,7 +35,10 @@ public class RecordedPurchasesController {
 
         List<RecordedPurchases> savedPurchasesList = recordedPurchasesService.saveValidProduct(purchasesList);
 
-        return ResponseEntity.status(HttpStatus.OK).body(JsonResponse.success(savedPurchasesList));
+        InvoiceResponse response = recordedPurchasesService.toResponse(savedPurchasesList);
+
+
+        return ResponseEntity.status(HttpStatus.OK).body(JsonResponse.success(response));
     }
 
 }

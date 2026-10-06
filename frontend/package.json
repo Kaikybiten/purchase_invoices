@@ -8,9 +8,11 @@
         "build": "vite build"
     },
     "dependencies": {
+        "@tailwindcss/vite": "^4.3.3",
         "@zxing/browser": "^0.1.5",
         "react": "^19.1.0",
-        "react-dom": "^19.1.0"
+        "react-dom": "^19.1.0",
+        "tailwindcss": "^4.3.3"
     },
     "devDependencies": {
         "@vitejs/plugin-react": "^5.0.0",
