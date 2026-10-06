@@ -3,6 +3,7 @@ package com.example.purchase_invoices.controller;
 import com.example.purchase_invoices.model.RecordedPurchases;
 import com.example.purchase_invoices.scrapper.ReaderHTML;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -31,11 +32,13 @@ public class ProductController {
             return ResponseEntity.status(HttpStatus.NOT_FOUND)
                     .body(JsonResponse.error("Nenhum produto foi encontrado."));
         }
+
         return ResponseEntity.status(HttpStatus.OK).body(JsonResponse.success(productList));
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<JsonResponse<Product>> getProductById(@PathVariable Long id) {
+    public ResponseEntity<JsonResponse<Product>> getProductById( @PathVariable Long id ) {
+
         Product product = productService.findById(id);
         return ResponseEntity.status(HttpStatus.OK).body(JsonResponse.success(product));
     }

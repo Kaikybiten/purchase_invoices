@@ -14,7 +14,7 @@ CREATE TABLE public.product (
     measure varchar(10),
     unit_price numeric(10, 2) NOT NULL,
     purchase_date date DEFAULT CURRENT_DATE,
-    CONSTRAINT product_pkey PRIMARY KEY (id),
+    CONSTRAINT product_pkey PRIMARY KEY (id)
 );
 
 CREATE TABLE public.recorded_purchases (

@@ -7,6 +7,7 @@ import com.example.purchase_invoices.response.JsonResponse;
 import com.example.purchase_invoices.scrapper.ReaderHTML;
 import com.example.purchase_invoices.service.RecordedPurchasesService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -18,7 +19,7 @@ import java.util.List;
 public class RecordedPurchasesController {
 
     @Autowired
-    RecordedPurchasesService recordedPurchasesService;
+    private RecordedPurchasesService recordedPurchasesService;
 
     @PostMapping
     public ResponseEntity<JsonResponse<InvoiceResponse>> postProduct(
@@ -26,6 +27,8 @@ public class RecordedPurchasesController {
     ) {
 
         List<RecordedPurchases> purchasesList = ReaderHTML.getProducts(invoiceUrlRequest.getUrl());
+
+
 
         if (purchasesList.isEmpty()) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(
