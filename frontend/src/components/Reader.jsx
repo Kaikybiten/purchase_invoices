@@ -20,13 +20,12 @@ function Reader({ setQrCode, setActiveCam, setData }) {
                     videoRef.current, // Elemento de video que receberá a câmera
 
                     // Callback chamado quando um QR Code é detectado - 'result' contém o resultado da leitura
-                    (result) => {
+                    async (result) => {
                         if (result) {
                             const url = result.getText();
-                            const products = await postInvoices(url)
+                            const products = await postInvoices(url);
 
-                            setData(products)
-
+                            setData(products);
                         }
                     },
                 );
