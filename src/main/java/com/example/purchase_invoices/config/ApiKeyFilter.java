@@ -26,6 +26,17 @@ public class ApiKeyFilter extends OncePerRequestFilter {
     }
 
     @Override
+    protected boolean shouldNotFilter(HttpServletRequest request) {
+        String path = request.getRequestURI();
+
+        boolean protectedPath = path.equals("/product")
+                                || path.startsWith("/product/")
+                                    || path.equals("/invoices");
+
+        return !protectedPath;
+    }
+
+    @Override
     protected void doFilterInternal(
             HttpServletRequest request,
             @NonNull HttpServletResponse response,
@@ -34,10 +45,6 @@ public class ApiKeyFilter extends OncePerRequestFilter {
 
         String apiKey = request.getHeader("X-API-Key");
 
-        System.out.println("equals: " + expectedApiKey.equals(apiKey));
-        System.out.println("header: [" + apiKey.substring(0, 4) + "..." + apiKey.substring(60) + "]");
-        System.out.println("expected: [" + expectedApiKey.substring(0, 4) + "..." + expectedApiKey.substring(60) + "]");
-
         if (!expectedApiKey.equals(apiKey)) {
 
             response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
@@ -45,7 +52,9 @@ public class ApiKeyFilter extends OncePerRequestFilter {
 
             JsonResponse<?> error = JsonResponse.error("Invalid API Key");
 
-            response.getWriter().write(objectMapper.writeValueAsString(error));
+            response.getWriter().write(
+                    objectMapper.writeValueAsString(error)
+            );
 
             return;
         }

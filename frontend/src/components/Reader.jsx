@@ -1,7 +1,8 @@
 import React, { useEffect, useRef } from "react";
 import { BrowserQRCodeReader } from "@zxing/browser";
+import { postInvoices } from "../service/invoices";
 
-function Reader({ setQrCode, setActiveCam }) {
+function Reader({ setQrCode, setActiveCam, setData }) {
     const videoRef = useRef(null);
 
     useEffect(() => {
@@ -21,7 +22,11 @@ function Reader({ setQrCode, setActiveCam }) {
                     // Callback chamado quando um QR Code é detectado - 'result' contém o resultado da leitura
                     (result) => {
                         if (result) {
-                            setQrCode(result.getText());
+                            const url = result.getText();
+                            const products = await postInvoices(url)
+
+                            setData(products)
+
                         }
                     },
                 );

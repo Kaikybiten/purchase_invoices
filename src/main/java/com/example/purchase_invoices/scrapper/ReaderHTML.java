@@ -167,6 +167,7 @@ public class ReaderHTML {
             }
 
         } catch (IOException erro) {
+
             throw  new InvoiceReadException(
                     "Não foi possivel realizar a leitura da nota fiscal informada",
                     erro

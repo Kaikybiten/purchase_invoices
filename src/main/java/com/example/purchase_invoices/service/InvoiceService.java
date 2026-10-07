@@ -14,4 +14,8 @@ public class InvoiceService {
     public Invoice save(Invoice invoice) {
         return invoiceRepository.save(invoice);
     }
+
+    public boolean existsByAccessToken(String acessToken) {
+        return invoiceRepository.existsByAccessToken(acessToken);
+    }
 }

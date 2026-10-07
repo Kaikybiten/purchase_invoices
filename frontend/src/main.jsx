@@ -42,7 +42,11 @@ function App() {
                         </span>
                     </div>
 
-                    <Reader setQrCode={setQrCode} setActiveCam={setActiveCam} />
+                    <Reader
+                        setQrCode={setQrCode}
+                        setActiveCam={setActiveCam}
+                        setData={setData}
+                    />
 
                     <div className="mt-5">
                         <label className="mb-2 block text-sm font-medium text-slate-700">
