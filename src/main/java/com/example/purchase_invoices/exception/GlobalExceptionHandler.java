@@ -23,15 +23,14 @@ public class GlobalExceptionHandler {
 
     // Metodo para capturar exceções de argumentos invalidos
     @ExceptionHandler(MethodArgumentNotValidException.class)
-    public ResponseEntity<JsonResponse<DataError>> handleMethodArgumentNotValidException (
+    public ResponseEntity<JsonResponse<List<DataError>>> handleMethodArgumentNotValidException(
             MethodArgumentNotValidException exception
     ) {
 
         List<DataError> dataError = new ArrayList<>();
 
-        // Objetos com os erros
         List<FieldError> allErrors = exception.getBindingResult().getFieldErrors();
-        // Iterando pois podem vir multiplos erros de validação
+
         allErrors.forEach(error -> {
 
             String field = error.getField();
@@ -40,10 +39,14 @@ public class GlobalExceptionHandler {
             dataError.add(new DataError(field, defaultMessage));
         });
 
-        JsonResponse<DataError> response = JsonResponse.error(
-                "Erro da validação de dados", dataError
+        JsonResponse<List<DataError>> response = JsonResponse.error(
+                "Erro da validação de dados",
+                dataError
         );
-        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
+
+        return ResponseEntity
+                .status(HttpStatus.BAD_REQUEST)
+                .body(response);
     }
 
     @ExceptionHandler(MalformedURLException.class)

@@ -20,7 +20,7 @@ public class ProductController {
     private ProductService productService;
 
     @GetMapping
-    public ResponseEntity<JsonResponse<Product>> getProduct() {
+    public ResponseEntity<JsonResponse<List<Product>>> getProduct() {
 
         List<Product> productList = productService.findAll();
 
