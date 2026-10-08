@@ -4,27 +4,30 @@ import { postInvoices } from "../service/invoices";
 
 function Reader({ setQrCode, setActiveCam, setData }) {
     const videoRef = useRef(null);
+    const readerRef = useRef(null);
+    const controlsRef = useRef(null);
     const processingRef = useRef(false);
 
     useEffect(() => {
-        let controls;
-
-        // Cria leitor da ZXing
         const reader = new BrowserQRCodeReader();
+
+        readerRef.current = reader;
 
         async function startScanner() {
             try {
-                // Inicia a camera armazenando em uma variavel para controle
-                controls = await reader.decodeFromVideoDevice(
-                    undefined, // deviceId da câmera; undefined = deixa a biblioteca escolher
-                    videoRef.current, // Elemento de video que receberá a câmera
-                    // Callback chamado quando um QR Code é detectado - 'result' contém o resultado da leitura
+                controlsRef.current = await reader.decodeFromVideoDevice(
+                    undefined,
+                    videoRef.current,
                     async (result) => {
                         if (!result || processingRef.current) {
                             return;
                         }
 
                         processingRef.current = true;
+
+                        // Para a câmera assim que o QR Code for lido
+                        controlsRef.current?.stop();
+                        setActiveCam(false);
 
                         try {
                             const url = result.getText();
@@ -36,8 +39,13 @@ function Reader({ setQrCode, setActiveCam, setData }) {
                             if (products) {
                                 setData(products);
                             }
+                        } catch (error) {
+                            console.error("Erro ao processar a nota:", error);
                         } finally {
                             processingRef.current = false;
+
+                            // Liga a câmera novamente
+                            await startScanner();
                         }
                     },
                 );
@@ -51,9 +59,8 @@ function Reader({ setQrCode, setActiveCam, setData }) {
 
         startScanner();
 
-        // Quando o componente deixar de existir:
         return () => {
-            controls?.stop();
+            controlsRef.current?.stop();
             reader.reset();
             setActiveCam(false);
         };

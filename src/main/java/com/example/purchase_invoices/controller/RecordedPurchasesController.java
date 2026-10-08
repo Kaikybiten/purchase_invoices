@@ -31,17 +31,17 @@ public class RecordedPurchasesController {
 
         List<RecordedPurchases> purchasesList = ReaderHTML.getProducts(invoiceUrlRequest.getUrl());
 
+        if (purchasesList.isEmpty()) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(
+                    JsonResponse.error("Nenhum produto localizado na nota informada.")
+            );
+        }
+
         String accessToken = purchasesList.get(0).getInvoice().getAccessToken().trim();
 
         if (invoiceService.existsByAccessToken(accessToken)) {
             return ResponseEntity.status(HttpStatus.CONFLICT).body(
                     JsonResponse.error("A nota informada já foi registrada.")
-            );
-        }
-
-        if (purchasesList.isEmpty()) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(
-                    JsonResponse.error("Nenhum produto localizado na nota informada.")
             );
         }
 

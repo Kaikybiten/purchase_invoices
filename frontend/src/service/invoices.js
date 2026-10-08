@@ -14,6 +14,8 @@ export async function postInvoices(url) {
 
     const jsonResponse = await response.json();
 
+    console.log(jsonResponse);
+
     if (!jsonResponse.success) {
         console.log(jsonResponse.message);
         return;

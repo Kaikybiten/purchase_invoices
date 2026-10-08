@@ -45,9 +45,9 @@ public class JsonResponse<T> {
         return new JsonResponse<>(false, message, null);
     }
 
-    public static <T> JsonResponse<T> error(String message, List<T> data) {
-        return new JsonResponse<>(false, message, data);
-    }
+    public static <T> JsonResponse<T> error(String message, List<T> data) {return new JsonResponse<>(false, message, data); }
+
+    public static <T> JsonResponse<T> error(String message, T data) { return new JsonResponse<>(false, message, data); }
 
     public boolean isSuccess() { return success; }
     public String getMessage() { return message; }
