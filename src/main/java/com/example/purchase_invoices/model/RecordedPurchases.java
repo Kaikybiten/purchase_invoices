@@ -3,7 +3,6 @@ package com.example.purchase_invoices.model;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import jakarta.persistence.*;
 
-
 import java.math.BigDecimal;
 import java.time.LocalDate;
 

@@ -2,8 +2,6 @@ package com.example.purchase_invoices.repository;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 import com.example.purchase_invoices.model.Product;
-import org.springframework.data.jpa.repository.Query;
-import org.springframework.data.repository.query.Param;
 
 import java.util.List;
 

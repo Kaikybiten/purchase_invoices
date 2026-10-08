@@ -1,9 +1,6 @@
 package com.example.purchase_invoices.controller;
 
-import com.example.purchase_invoices.model.RecordedPurchases;
-import com.example.purchase_invoices.scrapper.ReaderHTML;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -12,7 +9,6 @@ import com.example.purchase_invoices.model.Product;
 import com.example.purchase_invoices.response.JsonResponse;
 import com.example.purchase_invoices.service.ProductService;
 
-import com.example.purchase_invoices.model.InvoiceUrlRequest;
 
 import java.util.List;
 
