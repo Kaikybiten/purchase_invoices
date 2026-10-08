@@ -3,17 +3,11 @@ import React, { useState } from "react";
 import { createRoot } from "react-dom/client";
 import Reader from "./components/Reader";
 import Invoice from "./components/invoice/Invoice";
-import { postInvoices } from "./service/invoices";
 
 function App() {
     const [qrCode, setQrCode] = useState("");
     const [data, setData] = useState([]);
     const [activeCam, setActiveCam] = useState(false);
-
-    const handleInvoice = async () => {
-        const invoices = await postInvoices();
-        setData(invoices);
-    };
 
     return (
         <main className="min-h-screen bg-slate-100 px-4 py-10">
@@ -62,7 +56,7 @@ function App() {
                     </div>
                 </section>
 
-                {!data.length > 0 && (
+                {data.length > 0 && (
                     <section className="text-black font-mono mt-5 bg-white p-5 shadow-sm">
                         <div className="mb-4 flex items-center justify-between">
                             <div>

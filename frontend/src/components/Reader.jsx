@@ -4,6 +4,7 @@ import { postInvoices } from "../service/invoices";
 
 function Reader({ setQrCode, setActiveCam, setData }) {
     const videoRef = useRef(null);
+    const processingRef = useRef(false);
 
     useEffect(() => {
         let controls;
@@ -16,16 +17,27 @@ function Reader({ setQrCode, setActiveCam, setData }) {
                 // Inicia a camera armazenando em uma variavel para controle
                 controls = await reader.decodeFromVideoDevice(
                     undefined, // deviceId da câmera; undefined = deixa a biblioteca escolher
-
                     videoRef.current, // Elemento de video que receberá a câmera
-
                     // Callback chamado quando um QR Code é detectado - 'result' contém o resultado da leitura
                     async (result) => {
-                        if (result) {
+                        if (!result || processingRef.current) {
+                            return;
+                        }
+
+                        processingRef.current = true;
+
+                        try {
                             const url = result.getText();
+
+                            setQrCode(url);
+
                             const products = await postInvoices(url);
 
-                            setData(products);
+                            if (products) {
+                                setData(products);
+                            }
+                        } finally {
+                            processingRef.current = false;
                         }
                     },
                 );
@@ -41,9 +53,8 @@ function Reader({ setQrCode, setActiveCam, setData }) {
 
         // Quando o componente deixar de existir:
         return () => {
-            controls?.stop(); // Para câmera
-            reader.reset(); // Reinicia leitor
-
+            controls?.stop();
+            reader.reset();
             setActiveCam(false);
         };
     }, []);
