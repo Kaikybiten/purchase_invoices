@@ -6,7 +6,7 @@ import Invoice from "./components/invoice/Invoice";
 
 function App() {
     const [qrCode, setQrCode] = useState("");
-    const [data, setData] = useState([]);
+    const [data, setData] = useState(null);
     const [activeCam, setActiveCam] = useState(false);
 
     return (
@@ -56,7 +56,7 @@ function App() {
                     </div>
                 </section>
 
-                {data.length > 0 && (
+                {data?.products?.length > 0 && (
                     <section className="text-black font-mono mt-5 bg-white p-5 shadow-sm">
                         <div className="mb-4 flex items-center justify-between">
                             <div>
