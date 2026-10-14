@@ -1,4 +1,16 @@
 export async function postInvoices(url) {
+    // Cria sessão anônima antes de enviar a nota fiscal
+    const sessionResponse = await fetch("/session", {
+        method: "POST",
+        credentials: "same-origin",
+    });
+
+    if (!sessionResponse.ok) {
+        console.log(`Erro ao criar sessão: ${sessionResponse.status}`);
+        return;
+    }
+
+    // Envia a nota fiscal
     const response = await fetch("/invoices", {
         method: "POST",
         credentials: "same-origin",
