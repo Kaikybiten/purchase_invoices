@@ -20,11 +20,12 @@ public class SecurityConfig {
     @Bean
     public SecurityFilterChain defaultSecurityFilterChain(HttpSecurity http) throws Exception {
 
-        http.authorizeHttpRequests(auth ->
-
-                auth.anyRequest().permitAll()
-
-        ).formLogin(AbstractHttpConfigurer::disable) // Desativando formulario
+        http// Desativa CSRF para testar se ele está causando o 403
+                .csrf(AbstractHttpConfigurer::disable)
+                .authorizeHttpRequests(
+                        auth -> auth.anyRequest().permitAll()
+                )
+                .formLogin(AbstractHttpConfigurer::disable) // Desativando formulario
                 .httpBasic(AbstractHttpConfigurer::disable) // Não use usuário e senha enviados pelo HTTP Basic.
                 .addFilterBefore(
                         // Adiciona o AnonymousSessionFilter à cadeia de filtros, antes do UsernamePasswordAuthenticationFilter
