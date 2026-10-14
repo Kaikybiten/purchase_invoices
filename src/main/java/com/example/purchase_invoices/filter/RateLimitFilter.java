@@ -1,4 +1,4 @@
-package com.example.purchase_invoices.config;
+package com.example.purchase_invoices.filter;
 
 import com.example.purchase_invoices.response.JsonResponse;
 import io.github.bucket4j.Bandwidth;
@@ -82,6 +82,7 @@ public class RateLimitFilter extends OncePerRequestFilter {
 
         response.setStatus(429);
         response.setContentType("application/json");
+        response.setCharacterEncoding("UTF-8");
 
         JsonResponse<?> error = JsonResponse.error("Too many requests");
 

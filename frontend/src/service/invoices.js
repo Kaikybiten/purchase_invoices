@@ -1,6 +1,7 @@
 export async function postInvoices(url) {
     const response = await fetch("/invoices", {
         method: "POST",
+        credentials: "same-origin",
         headers: {
             "Content-Type": "application/json",
         },

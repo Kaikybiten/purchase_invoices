@@ -16,7 +16,6 @@ services:
       DATABASE_URL: ${DATABASE_URL}
       DATABASE_USERNAME: ${DATABASE_USERNAME}
       DATABASE_PASSWORD: ${DATABASE_PASSWORD}
-      API_KEY: ${API_KEY}
     ports:
       - "8080:8080"
     depends_on:
