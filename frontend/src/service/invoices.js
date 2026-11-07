@@ -22,6 +22,7 @@ export async function postInvoices(url) {
 
     if (!response.ok) {
         console.log(`Erro HTTP: ${response.status}`);
+        console.log(await response.text());
         return;
     }
 
@@ -36,3 +37,5 @@ export async function postInvoices(url) {
 
     return jsonResponse.data;
 }
+
+window.postInvoices = postInvoices;

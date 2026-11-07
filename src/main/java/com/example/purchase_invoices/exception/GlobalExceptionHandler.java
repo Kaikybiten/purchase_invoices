@@ -75,8 +75,6 @@ public class GlobalExceptionHandler {
             InvoiceReadException exception
     ) {
 
-        System.out.println(exception.getCause());
-
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(
                 JsonResponse.error(exception.getMessage())
         );

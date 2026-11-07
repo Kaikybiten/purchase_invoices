@@ -21,7 +21,6 @@ import java.util.concurrent.ConcurrentHashMap;
 @Component
 public class RateLimitFilter extends OncePerRequestFilter {
 
-
     private final ObjectMapper objectMapper;
 
     public RateLimitFilter(ObjectMapper objectMapper) {

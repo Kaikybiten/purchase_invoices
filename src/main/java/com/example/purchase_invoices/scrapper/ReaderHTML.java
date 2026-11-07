@@ -5,6 +5,11 @@ import com.example.purchase_invoices.model.Invoice;
 import com.example.purchase_invoices.model.Product;
 import com.example.purchase_invoices.model.RecordedPurchases;
 
+import java.net.URI;
+import java.net.http.HttpClient;
+import java.net.http.HttpRequest;
+import java.net.http.HttpResponse;
+
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
@@ -14,144 +19,80 @@ import java.io.IOException;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
+import java.time.Duration;
 import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Objects;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 public class ReaderHTML {
 
-    private static Matcher validateMatcher(String td, String patern) {
+    private static final HtmlUtils htmlUtils = new HtmlUtils();
+    private static final HtmlExtractor htmlExtractor = new HtmlExtractor();
 
-        Pattern pattern = Pattern.compile(patern);
-        return  pattern.matcher(td);
-
-    }
-
-    private static BigDecimal convertedDecimal (String value) {
-        return new BigDecimal(value.trim().replace(",", "."));
-    }
-
-    private static String readTd(Element tr, String query) {
-
-        return Objects.requireNonNull(
-                tr.select(query).first()
-            ).text().trim();
-    }
-
-    private static String validateRefAmount(Element tr) {
-
-        String td = readTd(tr, "span.RvlUnit");
-        if (td.isEmpty()) return "0";
-
-        Matcher matcher = validateMatcher(td, "(\\d+),(\\d{1,2})");
-
-        if (matcher.find())  return matcher.group();
-
-        return "0";
-
-    }
-
-    private static String validateRefQuantity (Element tr) {
-
-        String td = readTd(tr, "span.Rqtd");
-        if (td.isEmpty()) return "0";
-
-        Matcher matcher = validateMatcher(td, "(\\d+)(,)?(\\d+)?");
-
-        if (matcher.find())  {
-            return matcher.group();
-        }
-
-        return "0";
-    }
-
-    private static String validateRefMeasurement (Element tr) {
-
-        String td = readTd(tr, "span.RUN");
-        if (td.isEmpty()) return "UN";
-
-        return td.split(":")[1].trim();
-    }
-
-    private static String validateRefCode(Element tr) {
-        String td = readTd(tr, "span.RCod");
-
-        // (.*?) = Obtem todos os caracteres entre : e ), '?' garante uma unica ocorrencia
-        Matcher matcher = validateMatcher(td, "\\:(.*?)\\)");
-
-        if (matcher.find())  return matcher.group(1).trim();
-
-        return "0";
-    }
-
-    private static LocalDate convertDate(Element doc) {
-
-        String dateText = readTd(doc, "ul.jqm-listview");
-
-        System.out.println(dateText);
-
-        Matcher matcher = validateMatcher(
-                dateText,
-                "\\d{2}/\\d{2}/\\d{4} \\d{2}:\\d{2}"
-        );
-
-
-        if (!matcher.find()) {
-            throw new InvoiceReadException(
-                    "Não foi possível localizar a data da nota fiscal.",
-                    null
-            );
-        }
-
-        String date = matcher.group();
-
-        System.out.println(date + " " + matcher.group());
-
-        return LocalDateTime
-                .parse(date, DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm"))
-                .toLocalDate();
-    }
-
-    private static String getCode(Element doc) {
-        String accessKey =readTd(doc, "ul.jqm-listview span.chave");
-        return accessKey.replaceAll("\\s+", "");
-    }
+    private static final HttpClient CLIENT = HttpClient.newBuilder()
+            .connectTimeout(Duration.ofSeconds(15))
+            .followRedirects(HttpClient.Redirect.NORMAL)
+            .version(HttpClient.Version.HTTP_1_1)
+            .build();
 
     public static List<RecordedPurchases> getProducts(String url) {
 
         List<RecordedPurchases> recordedPurchases = new ArrayList<>();
 
         try {
-            Document document = Jsoup.connect(url).get();
+
+            String encodedUrl = url.replace("|", "%7C");
+
+            // Contrutor
+            HttpRequest.Builder builder = HttpRequest.newBuilder();
+
+            URI urlAddress = URI.create(encodedUrl);
+
+            // Requisição
+            HttpRequest request = builder
+                    .uri(urlAddress) // Endereço
+                    .header("User-Agent", "Mozilla/5.0") // Dados genericos para entrada
+                    .header("Accept", "text/html,application/xhtml+xml")
+                    .GET() // Define o metodo da requisição
+                    .build(); // Constroi a requisição
+
+            // Executa requisição
+            HttpResponse<String> response = CLIENT.send(
+                    request,
+                    HttpResponse.BodyHandlers.ofString() // Define como resposta será tratada
+            );
+
+            if (response.statusCode() != 200) {
+                throw new InvoiceReadException(
+                        "Não foi possível consultar a NFC-e. HTTP Status: " + response.statusCode()
+                );
+            }
+
+            Document document = Jsoup.parse(response.body());
 
             Element element = document.getElementById("tabResult");
 
             if (element == null){
                 return recordedPurchases;
             }
+
             Elements elements = element.select("tr");
 
-            LocalDate purchaseDate = convertDate(document);
-            String purchaseCode =  getCode(document);
+            LocalDate purchaseDate = htmlExtractor.convertDate(document);
+            String purchaseCode =  htmlExtractor.getCode(document);
 
             Invoice invoice = new Invoice(purchaseCode, purchaseDate);
 
             for (Element tr : elements) {
 
-                String name = readTd(tr, "span.txtTit");
-                String code = validateRefCode(tr);
-                String measure = validateRefMeasurement(tr);
-                BigDecimal unitPrice = convertedDecimal(validateRefAmount(tr));
+                String name = htmlExtractor.readTd(tr, "span.txtTit");
+                String code = htmlExtractor.validateRefCode(tr);
+                String measure = htmlExtractor.validateRefMeasurement(tr);
+                BigDecimal unitPrice = htmlUtils.convertedDecimal(htmlExtractor.validateRefAmount(tr));
 
-                BigDecimal quantity = convertedDecimal(validateRefQuantity(tr));
-                BigDecimal totalPrice = convertedDecimal( readTd(tr, "span.valor") );
-
+                BigDecimal quantity = htmlUtils.convertedDecimal(htmlExtractor.validateRefQuantity(tr));
+                BigDecimal totalPrice = htmlUtils.convertedDecimal( htmlExtractor.readTd(tr, "span.valor") );
 
                 BigDecimal allegedTotalPrice = unitPrice
                         .multiply(quantity)
@@ -168,7 +109,7 @@ public class ReaderHTML {
                 );
             }
 
-        } catch (IOException erro) {
+        } catch (IOException | InterruptedException erro) {
 
             throw  new InvoiceReadException(
                     "Não foi possivel realizar a leitura da nota fiscal informada",
