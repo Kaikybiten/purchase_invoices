@@ -10,6 +10,8 @@ import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
 
+import java.net.CookieManager;
+
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
@@ -30,9 +32,12 @@ public class ReaderHTML {
     private static final HtmlUtils htmlUtils = new HtmlUtils();
     private static final HtmlExtractor htmlExtractor = new HtmlExtractor();
 
+    private static final CookieManager cookieManager = new CookieManager();
+
     private static final HttpClient CLIENT = HttpClient.newBuilder()
-            .connectTimeout(Duration.ofSeconds(15))
+            .connectTimeout(Duration.ofSeconds(30))
             .followRedirects(HttpClient.Redirect.NORMAL)
+            .cookieHandler(cookieManager)
             .version(HttpClient.Version.HTTP_1_1)
             .build();
 
@@ -52,8 +57,14 @@ public class ReaderHTML {
             // Requisição
             HttpRequest request = builder
                     .uri(urlAddress) // Endereço
-                    .header("User-Agent", "Mozilla/5.0") // Dados genericos para entrada
-                    .header("Accept", "text/html,application/xhtml+xml")
+                    .timeout(Duration.ofSeconds(30))
+                    // Dados genericos para entrada
+                    .header("User-Agent",
+                            "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/131.0.0.0 Safari/537.36")
+                    .header("Accept",
+                            "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8")
+                    .header("Accept-Language",
+                            "pt-BR,pt;q=0.9")
                     .GET() // Define o metodo da requisição
                     .build(); // Constroi a requisição
 
@@ -73,8 +84,10 @@ public class ReaderHTML {
 
             Element element = document.getElementById("tabResult");
 
-            if (element == null){
-                return recordedPurchases;
+            if (element == null) {
+                throw new InvoiceReadException(
+                        "A SEFAZ não retornou a página de consulta da NFC-e."
+                );
             }
 
             Elements elements = element.select("tr");
