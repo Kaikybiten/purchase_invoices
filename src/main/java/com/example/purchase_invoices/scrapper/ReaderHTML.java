@@ -111,8 +111,11 @@ public class ReaderHTML {
 
         } catch (IOException | InterruptedException erro) {
 
-            throw  new InvoiceReadException(
-                    "Não foi possivel realizar a leitura da nota fiscal informada",
+            System.err.println("Erro original: " + erro.getClass().getName());
+            erro.printStackTrace();
+
+            throw new InvoiceReadException(
+                    "Não foi possível realizar a leitura da nota fiscal informada",
                     erro
             );
         }
