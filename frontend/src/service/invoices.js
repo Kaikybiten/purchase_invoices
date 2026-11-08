@@ -37,5 +37,3 @@ export async function postInvoices(url) {
 
     return jsonResponse.data;
 }
-
-window.postInvoices = postInvoices;

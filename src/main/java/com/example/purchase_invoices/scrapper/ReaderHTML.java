@@ -32,16 +32,18 @@ public class ReaderHTML {
     private static final HtmlUtils htmlUtils = new HtmlUtils();
     private static final HtmlExtractor htmlExtractor = new HtmlExtractor();
 
-    private static final CookieManager cookieManager = new CookieManager();
-
-    private static final HttpClient CLIENT = HttpClient.newBuilder()
-            .connectTimeout(Duration.ofSeconds(30))
-            .followRedirects(HttpClient.Redirect.NORMAL)
-            .cookieHandler(cookieManager)
-            .version(HttpClient.Version.HTTP_1_1)
-            .build();
+    private static HttpClient createClient(CookieManager cookieManager) {
+        return HttpClient.newBuilder()
+                .connectTimeout(Duration.ofSeconds(30))
+                .followRedirects(HttpClient.Redirect.NORMAL)
+                .cookieHandler(cookieManager)
+                .version(HttpClient.Version.HTTP_1_1)
+                .build();
+    }
 
     public static List<RecordedPurchases> getProducts(String url) {
+
+        HttpClient CLIENT = createClient(new CookieManager());
 
         List<RecordedPurchases> recordedPurchases = new ArrayList<>();
 
