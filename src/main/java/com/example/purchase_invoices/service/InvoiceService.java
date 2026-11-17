@@ -11,11 +11,12 @@ public class InvoiceService {
     @Autowired
     private InvoiceRepository invoiceRepository;
 
-    public Invoice save(Invoice invoice) {
-        return invoiceRepository.save(invoice);
+    public void save(Invoice invoice) {
+
+        invoiceRepository.save(invoice);
     }
 
-    public boolean existsByAccessToken(String acessToken) {
-        return invoiceRepository.existsByAccessToken(acessToken);
+    public boolean existsByAccessToken(String accessToken) {
+        return invoiceRepository.existsByAccessToken(accessToken);
     }
 }

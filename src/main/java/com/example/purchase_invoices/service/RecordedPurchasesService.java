@@ -9,8 +9,6 @@ import com.example.purchase_invoices.repository.RecordedPurchasesRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.math.BigDecimal;
-import java.util.ArrayList;
 import java.util.List;
 
 @Service
@@ -25,56 +23,26 @@ public class RecordedPurchasesService {
     @Autowired
     private InvoiceService invoiceService;
 
+
+    private void saveInvoice(List<RecordedPurchases> recordedPurchases) {
+
+        // Salvando nota
+        recordedPurchases.stream()
+                .findFirst() // Extrai primeira compra e unica
+                .map(RecordedPurchases::getInvoice) // Extrai nota
+                .ifPresent(invoiceService::save); // Salva nota no banco
+    }
+
+
     public List<RecordedPurchases> saveValidProduct(
             List<RecordedPurchases> recordedPurchases
     ) {
 
-        // Salvando nota
-        Invoice invoice = recordedPurchases.get(0).getInvoice();
-        invoiceService.save(invoice);
+        saveInvoice(recordedPurchases);
 
+        List<Product> products = productService.processProduct(recordedPurchases);
 
-        List<Product> products = recordedPurchases.stream()
-                .map(RecordedPurchases::getProduct)
-                .toList();
-
-        // Obtendo codigos para busca em banco
-        List<String> codes = products.stream()
-                .map(Product::getCode)
-                .toList();
-
-        List<Product> existingProducts = productService.findByCodeIn(codes);
-
-        List<Product> newProducts = new ArrayList<>();
-        for (RecordedPurchases purchase : recordedPurchases) {
-
-            Product product = purchase.getProduct();
-
-            // Verificação se produto já está no banco
-            Product existingProduct = existingProducts.stream()
-                    .filter(existing -> {
-
-                        String code = existing.getCode();
-                        BigDecimal unitPrice = product.getUnitPrice();
-
-                        return code.equals(product.getCode())
-                                && unitPrice.compareTo(product.getUnitPrice()) == 0;
-                            }
-
-                    ).findFirst().orElse(null);
-
-            // Caso haja registro do produto no banco de dados, apenas irá referenciar em 'recorded_purchases'
-            if (existingProduct != null) {
-                purchase.setProduct(existingProduct);
-                continue;
-            }
-
-            // Valida como novo produto e registra novo produto no banco da dados
-            product.setValid(true);
-            newProducts.add(product);
-        }
-
-        productService.saveAll(newProducts);
+        productService.saveAll(products);
 
         recordedPurchasesRepository.saveAll(recordedPurchases);
 
@@ -86,9 +54,7 @@ public class RecordedPurchasesService {
     ) {
         Invoice invoice = purchases.get(0).getInvoice();
 
-        Invoice savedInvoice = invoiceService.save(invoice);
-
-        System.out.println("INVOICE ID: " + savedInvoice.getId());
+        invoiceService.save(invoice);
 
         List<ProductPurchaseResponse> products = purchases.stream()
                 .map(purchase -> {
@@ -110,12 +76,5 @@ public class RecordedPurchasesService {
                 invoice.getInvoiceEntryDate(),
                 products
         );
-    }
-
-    public List<RecordedPurchases> saveAll(List<RecordedPurchases> recordedPurchases) {
-
-        recordedPurchasesRepository.saveAll(recordedPurchases);
-
-        return recordedPurchases;
     }
 }

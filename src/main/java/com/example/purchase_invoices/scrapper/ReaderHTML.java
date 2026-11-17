@@ -33,6 +33,7 @@ public class ReaderHTML {
     private static final HtmlExtractor htmlExtractor = new HtmlExtractor();
 
     private static HttpClient createClient(CookieManager cookieManager) {
+
         return HttpClient.newBuilder()
                 .connectTimeout(Duration.ofSeconds(30))
                 .followRedirects(HttpClient.Redirect.NORMAL)
