@@ -1,6 +1,7 @@
 package com.example.purchase_invoices.exception;
 
 
+
 import jakarta.persistence.EntityNotFoundException;
 
 import org.springframework.http.HttpStatus;
@@ -21,9 +22,6 @@ import java.util.List;
 
 import com.example.purchase_invoices.response.DataError;
 import com.example.purchase_invoices.response.JsonResponse;
-
-
-
 
 // Captura as exceções de toda aplicação
 @RestControllerAdvice

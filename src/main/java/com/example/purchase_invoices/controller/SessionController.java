@@ -1,7 +1,6 @@
 package com.example.purchase_invoices.controller;
 
 import jakarta.servlet.http.HttpServletRequest;
-import jakarta.servlet.http.HttpSession;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -17,7 +16,7 @@ public class SessionController {
     public ResponseEntity<?> createSession(HttpServletRequest request) {
 
         // Cria sessão
-        HttpSession session = request.getSession(true);
+        request.getSession(true);
 
         return ResponseEntity.ok(
                 Map.of("message", "Sessão criada com sucesso.")

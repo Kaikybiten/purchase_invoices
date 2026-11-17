@@ -7,10 +7,10 @@ import java.time.LocalDateTime;
 @JsonPropertyOrder({"success", "message", "timestamp", "data"})
 public class JsonResponse<T> {
 
-    private boolean success;
-    private String message;
-    private LocalDateTime timestamp;
-    private T data;
+    private final boolean success;
+    private final String message;
+    private final LocalDateTime timestamp;
+    private final T data;
 
     private JsonResponse(boolean success, String message, T data) {
         this.success = success;
@@ -35,11 +35,9 @@ public class JsonResponse<T> {
         return new JsonResponse<>(false, message, data);
     }
 
+
     public boolean isSuccess() {return success;}
-
     public String getMessage() {return message;}
-
     public LocalDateTime getTimestamp() {return timestamp;}
-
     public T getData() {return data;}
 }

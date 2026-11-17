@@ -3,7 +3,6 @@ package com.example.purchase_invoices.filter;
 import com.example.purchase_invoices.response.JsonResponse;
 import io.github.bucket4j.Bandwidth;
 import io.github.bucket4j.Bucket;
-import io.github.bucket4j.Refill;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -34,11 +33,11 @@ public class RateLimitFilter extends OncePerRequestFilter {
 
     private Bucket createBucket() {
 
-        // Adicionar 3 tokens ao Bucket a cada 1 minuto.
-        Refill refill = Refill.intervally(3, Duration.ofMinutes(1));
-
-        // Limitando a no máximo 3 tokens por Bucket
-        Bandwidth limit = Bandwidth.classic(3, refill);
+        // Construindo consumo de tokens
+        Bandwidth limit = Bandwidth.builder()
+                .capacity(3) // Maximo 3 tokens
+                .refillIntervally(3, Duration.ofMinutes(1)) // Adiciona 3 tokens a cada 1 minuto
+                .build();
 
         // Retornando Bucket configurado
         return Bucket.builder()
@@ -88,9 +87,6 @@ public class RateLimitFilter extends OncePerRequestFilter {
         response.getWriter().write(
                 objectMapper.writeValueAsString(error)
         );
-
-        return;
-
     }
 }
 

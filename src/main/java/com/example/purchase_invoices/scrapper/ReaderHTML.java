@@ -83,24 +83,6 @@ public class ReaderHTML {
                 );
             }
 
-
-
-            System.out.println("Status HTTP: " + response.statusCode());
-
-            System.out.println("Content-Type: " +
-                    response.headers().firstValue("Content-Type").orElse("ausente"));
-
-            System.out.println("URL final: " + response.uri().getPath());
-
-            String body = response.body();
-
-            System.out.println("Tamanho do HTML: " + body.length());
-
-            System.out.println("Início do HTML recebido:");
-            System.out.println(body.substring(0, Math.min(body.length(), 1000)));
-
-
-
             Document document = Jsoup.parse(response.body());
 
             Element element = document.getElementById("tabResult");
@@ -143,16 +125,16 @@ public class ReaderHTML {
                 );
             }
 
-        } catch (IOException | InterruptedException erro) {
+        } catch (IOException | InterruptedException error) {
 
-            System.err.println("Erro original: " + erro.getClass().getName());
-            erro.printStackTrace();
+            System.err.println("Erro original: " + error.getClass().getName());
 
             throw new InvoiceReadException(
                     "Não foi possível realizar a leitura da nota fiscal informada",
-                    erro
+                    error
             );
         }
+
         return recordedPurchases;
     }
 
