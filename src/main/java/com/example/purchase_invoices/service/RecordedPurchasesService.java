@@ -33,7 +33,6 @@ public class RecordedPurchasesService {
                 .ifPresent(invoiceService::save); // Salva nota no banco
     }
 
-
     public List<RecordedPurchases> saveValidProduct(
             List<RecordedPurchases> recordedPurchases
     ) {
