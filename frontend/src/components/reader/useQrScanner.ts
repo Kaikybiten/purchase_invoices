@@ -1,10 +1,13 @@
-import { useEffect, useRef } from "react";
-import { BrowserQRCodeReader } from "@zxing/browser";
+import { Dispatch, useEffect, useRef } from "react";
+import { BrowserQRCodeReader, IScannerControls } from "@zxing/browser";
 
 // Criando leitor do QrCode
-export function useQrScanner(onScan, setActiveCam) {
-    const videoRef = useRef(null);
-    const controlsRef = useRef(null);
+export function useQrScanner(
+    onScan: Dispatch<string>,
+    setActiveCam: Dispatch<boolean>,
+) {
+    const videoRef = useRef<HTMLVideoElement>(null);
+    const controlsRef = useRef<IScannerControls>(null);
     const processingRef = useRef(false);
 
     useEffect(() => {
@@ -12,6 +15,8 @@ export function useQrScanner(onScan, setActiveCam) {
         const reader = new BrowserQRCodeReader();
 
         async function startScanner() {
+            if (!videoRef.current) return;
+
             try {
                 const controls = await reader.decodeFromVideoDevice(
                     undefined,
@@ -43,6 +48,7 @@ export function useQrScanner(onScan, setActiveCam) {
                 }
 
                 controlsRef.current = controls;
+
                 setActiveCam(true);
             } catch (error) {
                 console.error("Erro ao acessar a câmera:", error);

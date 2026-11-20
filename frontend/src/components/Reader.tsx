@@ -1,12 +1,19 @@
-import React, { useState } from "react";
+import React, { Dispatch, SetStateAction, useState } from "react";
 import { useQrScanner } from "./reader/useQrScanner";
 import { processInvoice } from "./reader/processInvoice";
+import { RecordedInvoice } from "../types/invoice";
 
-function Reader({ setQrCode, setActiveCam, setData }) {
+type ReaderProps = {
+    setQrCode: Dispatch<string>;
+    setActiveCam: Dispatch<boolean>;
+    setData: Dispatch<RecordedInvoice>;
+};
+
+function Reader({ setQrCode, setActiveCam, setData }: ReaderProps) {
     const [loading, setLoading] = useState(false);
 
     // Função
-    const videoRef = useQrScanner(async (url) => {
+    const videoRef = useQrScanner(async (url: string) => {
         setLoading(true);
 
         try {

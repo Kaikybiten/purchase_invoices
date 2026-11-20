@@ -1,4 +1,8 @@
-export async function postInvoices(url) {
+import { RecordedInvoice } from "../types/invoice.ts";
+
+export async function postInvoices(
+    url: string,
+): Promise<RecordedInvoice | null> {
     // Cria sessão anônima antes de enviar a nota fiscal
     const sessionResponse = await fetch("/session", {
         method: "POST",
@@ -7,7 +11,7 @@ export async function postInvoices(url) {
 
     if (!sessionResponse.ok) {
         console.log(`Erro ao criar sessão: ${sessionResponse.status}`);
-        return;
+        return null;
     }
 
     // Envia a nota fiscal
@@ -23,16 +27,14 @@ export async function postInvoices(url) {
     if (!response.ok) {
         console.log(`Erro HTTP: ${response.status}`);
         console.log(await response.text());
-        return;
+        return null;
     }
 
     const jsonResponse = await response.json();
 
-    console.log(jsonResponse);
-
     if (!jsonResponse.success) {
         console.log(jsonResponse.message);
-        return;
+        return null;
     }
 
     return jsonResponse.data;

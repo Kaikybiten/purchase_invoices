@@ -1,12 +1,13 @@
 import "./index.css";
-import React, { useState } from "react";
+import { useState } from "react";
 import { createRoot } from "react-dom/client";
 import Reader from "./components/Reader";
 import Invoice from "./components/invoice/Invoice";
+import { RecordedInvoice } from "./types/invoice";
 
 function App() {
     const [qrCode, setQrCode] = useState("");
-    const [data, setData] = useState(null);
+    const [data, setData] = useState<RecordedInvoice>();
     const [activeCam, setActiveCam] = useState(false);
 
     return (
@@ -56,7 +57,7 @@ function App() {
                     </div>
                 </section>
 
-                {data?.products?.length > 0 && (
+                {data && data.products.length > 0 && (
                     <section className="text-black font-mono mt-5 bg-white p-5 shadow-sm">
                         <div className="mb-4 flex items-center justify-between">
                             <div>
@@ -74,4 +75,8 @@ function App() {
     );
 }
 
-createRoot(document.getElementById("root")).render(<App />);
+const root = document.getElementById("root");
+
+if (root instanceof HTMLElement) {
+    createRoot(root).render(<App />);
+}

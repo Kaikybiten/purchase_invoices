@@ -1,6 +1,6 @@
-import React from "react";
+import { Product } from "../../types/invoice";
 
-function ProductItem({ item }) {
+function ProductItem({ item }: { item: Product }) {
     return (
         <div className="flex items-center justify-between gap-4 mb-2">
             <div className="min-w-0">
