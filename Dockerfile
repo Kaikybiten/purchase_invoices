@@ -23,7 +23,7 @@ RUN npm run build
 # --- Build do Spring Boot ---
 
 # Imagem do Java e etapa atual 'backend-build'
-FROM eclipse-temurin:21-jde AS backend-build
+FROM eclipse-temurin:21-jdk AS backend-build
 
 # Local de trabalho dentro do container
 WORKDIR /app
@@ -45,6 +45,14 @@ FROM eclipse-temurin:21-jre
 
 # Local de trabalho dentro do container
 WORKDIR /app
+
+# Cria um usuário sem privilégios administrativos
+RUN groupadd --system appgroup && \
+    useradd --system --gid appgroup appuser
+
+# Copia o JAR e define o proprietário
+COPY --from=backend-build --chown=appuser:appgroup \
+    /app/target/purchase_invoices-0.0.1-SNAPSHOT.jar app.jar
 
 # Copia o JAR gerado na etapa anterior
 COPY --from=backend-build /app/target/purchase_invoices-0.0.1-SNAPSHOT.jar app.jar
