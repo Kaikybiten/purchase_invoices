@@ -1,111 +1,121 @@
 # Purchase Invoices
 
-A full-stack application for reading Brazilian electronic consumer invoices (NFC-e) through QR Codes, extracting product information, and recording purchases in a PostgreSQL database.
+A full-stack application for scanning Brazilian electronic consumer invoices (NFC-e) through QR Codes, extracting product information, and recording purchases in a PostgreSQL database.
+
+The project combines a React frontend with a Java and Spring Boot backend, providing a REST API for invoice processing, product validation, and purchase persistence.
 
 ## Demo
 
 ![Purchase Invoices Demo](./docs/demo.gif)
 
-**Live application:** [purchase-invoices.onrender.com](https://purchase-invoices.onrender.com/)
+
+**Live application:** [https://purchase-invoices.onrender.com/](https://purchase-invoices.onrender.com/)
 
 ## Features
 
-- **QR Code Scanning:** Read NFC-e QR Codes using a device's camera.
-- **Invoice Extraction:** Retrieve invoice information directly from the URL encoded in the QR Code.
-- **Product Processing:** Extract product descriptions, codes, quantities, unit prices, and total prices.
-- **Data Validation:** Validate extracted product information before persistence.
-- **Duplicate Prevention:** Prevent an invoice from being registered more than once using its access token.
-- **Purchase History:** Persist invoices and their associated products.
-- **Product Reuse:** Identify previously registered products based on their codes and unit prices.
-- **Anonymous Sessions:** Control access to protected endpoints without requiring user registration.
-- **Rate Limiting:** Restrict excessive requests to protect the API.
+- **QR Code Scanning:** Scan NFC-e QR Codes using the device camera.
+- **Invoice Data Extraction:** Retrieve invoice information from the URL encoded in the QR Code.
+- **HTML Parsing:** Extract invoice and product information from the SEFAZ consultation page.
+- **Data Validation:** Validate product information, including quantity and price consistency.
+- **Duplicate Prevention:** Check invoice access tokens to prevent duplicate registrations.
+- **Product Management:** Reuse previously registered products and save new ones.
+- **Purchase Records:** Associate products with invoices and store quantities, prices, and purchase dates.
+- **Anonymous Sessions:** Protect API endpoints through HTTP sessions without requiring user registration.
+- **Rate Limiting:** Limit excessive requests to help protect the API.
 
 ## Technologies
 
 ### Backend
-- Java 17
-- Spring Boot 4
-- Spring Web MVC
-- Spring Data JPA
-- Spring Security
-- Hibernate
-- PostgreSQL
-- Flyway
-- Jsoup
-- Bucket4j
-- Maven
+
+|Technology|Purpose|
+|---|---|
+|Java 21|Main programming language|
+|Spring Boot 4.2.0|Application framework|
+|Spring Web MVC|REST API development|
+|Spring Data JPA|Data persistence|
+|Spring Security|Security filter configuration|
+|Hibernate|ORM and entity mapping|
+|PostgreSQL|Relational database|
+|Flyway|Database migrations|
+|Jsoup|HTML parsing|
+|Java HttpClient|HTTP requests to external invoice pages|
+|Bucket4j|Rate limiting|
+|Maven|Dependency management and build|
 
 ### Frontend
-- React 19
-- TypeScript
-- Vite
-- Tailwind CSS
-- ZXing Browser
 
-### Infrastructure
+|Technology|Purpose|
+|---|---|
+|React 19|User interface|
+|TypeScript|Static typing|
+|Vite|Development server and build tool|
+|Tailwind CSS 4|Styling|
+|ZXing Browser|QR Code scanning|
+
+### Infrastructure and Testing
+
 - Docker
 - Docker Compose
-
-### Testing
 - JUnit 5
 - Mockito
+- Testcontainers dependencies
 
 ## Architecture
 
-The application follows a layered architecture, separating HTTP requests, business logic, data persistence, and external HTML extraction.
+The application follows a layered backend architecture, separating HTTP requests, business logic, data access, and external HTML extraction.
 
-```text
-                Browser / Mobile
-                       |
-                       v
-                React + TypeScript
-                       |
-                       v
-                 REST API
-                       |
-          +------------+------------+
-          |            |            |
-          v            v            v
-      Controller    Security     Validation
-          |
-          v
-        Service
-          |
-     +----+----------------+
-     |                     |
-     v                     v
- Repository            HTML Scraper
-     |                     |
-     v                     v
- PostgreSQL            SEFAZ Website
+```
+                    Browser / Mobile
+                           |
+                           v
+                   React + TypeScript
+                           |
+                           v
+                      REST API
+                           |
+             +-------------+-------------+
+             |             |             |
+             v             v             v
+         Controller     Security     Validation
+             |
+             v
+           Service
+             |
+       +-----+----------------+
+       |                      |
+       v                      v
+   Repository             HTML Reader
+       |                      |
+       v                      v
+   PostgreSQL            SEFAZ Website
 ```
 
-### Backend organization
-
-| Package | Responsibility |
-|---|---|
-| `config` | Security and validation configuration |
-| `controller` | REST API endpoints |
-| `dto` | Response data transfer objects |
-| `exception` | Centralized exception handling |
-| `filter` | Anonymous session validation and rate limiting |
-| `model` | JPA entities and request models |
-| `repository` | Database access |
-| `scrapper` | External HTML retrieval and data extraction |
-| `service` | Business rules and application logic |
-| `response` | Standardized API responses |
-
-### Invoice processing flow
+### Invoice Processing Flow
 
 1. The frontend accesses the device camera and scans the NFC-e QR Code using ZXing.
 2. The QR Code URL is sent to the backend through a REST request.
-3. The backend retrieves the corresponding SEFAZ page using Java HttpClient.
-4. Jsoup parses the HTML and extracts invoice and product information.
-5. Extracted values undergo validation, including price and quantity consistency checks.
-6. The application checks whether the invoice has already been registered.
-7. Existing products are reused, while new products are persisted.
-8. The invoice and its associated purchases are stored in PostgreSQL.
-9. The API returns the processed invoice and product information.
+3. The backend retrieves the SEFAZ consultation page using Java HttpClient.
+4. Jsoup parses the returned HTML.
+5. Invoice and product information is extracted and validated.
+6. The application checks whether the invoice access token has already been registered.
+7. Existing products are reused, while new products are processed and saved.
+8. The invoice and associated purchase records are persisted in PostgreSQL.
+9. The API returns the processed invoice and its product information.
+
+### Backend Structure
+
+|Package|Responsibility|
+|---|---|
+|`config`|Security and application configuration|
+|`controller`|REST API endpoints|
+|`dto`|Data transfer objects|
+|`exception`|Custom exceptions and error handling|
+|`filter`|Anonymous session validation and rate limiting|
+|`model`|JPA entities and request models|
+|`repository`|Database access|
+|`response`|Standardized API responses|
+|`scrapper`|External HTML retrieval and extraction|
+|`service`|Business rules and application logic|
 
 ## Database
 
@@ -115,18 +125,30 @@ PostgreSQL stores three main entities:
 - **Product:** Stores product information, including description, code, unit of measurement, and unit price.
 - **RecordedPurchases:** Associates invoices with products, recording quantities, total prices, and purchase dates.
 
-Database schema changes are managed through Flyway migrations, while Hibernate validates the schema at application startup.
+Flyway manages database schema migrations, while Hibernate validates the mapped entities against the database schema at application startup.
 
-## API Endpoints
+## REST API
 
-| Method | Endpoint | Description |
+|Method|Endpoint|Description|
 |---|---|---|
-| POST | `/session` | Creates an anonymous session |
-| POST | `/invoices` | Processes and records an NFC-e invoice |
-| GET | `/product` | Retrieves registered products |
-| GET | `/product/{id}` | Retrieves a product by ID |
+|POST|`/session`|Creates an anonymous HTTP session|
+|POST|`/invoices`|Processes and records an NFC-e invoice|
+|GET|`/product`|Retrieves registered products|
+|GET|`/product/{id}`|Retrieves a product by ID|
 
-### Invoice processing
+### Session Creation
+
+A session must be created before accessing protected product and invoice endpoints.
+
+**Request:**
+
+```http
+POST /session
+```
+
+The application creates an HTTP session and returns a confirmation message. The client must retain the session cookie for subsequent requests.
+
+### Invoice Processing
 
 **Request:**
 
@@ -141,16 +163,28 @@ Content-Type: application/json
 }
 ```
 
-**Successful response:**
+The endpoint retrieves the invoice page, extracts its information, validates the products, and records the purchase data.
+
+**Response:**
 
 Returns the invoice access token, invoice date, and associated product information.
 
-**Error handling:**
+### HTTP Status Codes
 
-- `400 Bad Request`: No products could be extracted from the invoice.
-- `401 Unauthorized`: Missing or expired anonymous session.
-- `409 Conflict`: Invoice already registered.
-- `429 Too Many Requests`: Request rate limit exceeded.
+|Status|Description|
+|---|---|
+|`200 OK`|Request successfully processed|
+|`400 Bad Request`|No valid products were extracted from the invoice|
+|`401 Unauthorized`|Missing or expired anonymous session|
+|`404 Not Found`|No registered products were found|
+|`409 Conflict`|Invoice already registered|
+|`429 Too Many Requests`|Request rate limit exceeded|
+
+### Security and Rate Limiting
+
+- Anonymous HTTP sessions are required for `/product` and `/invoices` endpoints.
+- The rate limiter uses Bucket4j to allow up to 3 requests per minute per client IP address on protected routes.
+- The application does not require user registration or a traditional username and password.
 
 ## Getting Started
 
@@ -160,19 +194,19 @@ Returns the invoice access token, invoice date, and associated product informati
 - Docker
 - Docker Compose
 
-### 1. Clone the repository
+### 1. Clone the Repository
 
-```bash
+```powershell
 git clone https://github.com/Kaikybiten/purchase_invoices.git
 
 cd purchase_invoices
 ```
 
-### 2. Configure environment variables
+### 2. Configure Environment Variables
 
 Create a `.env` file in the project root:
 
-```env
+```properties
 DATABASE_URL=jdbc:postgresql://postgres:5432/purchase_invoices
 DATABASE_USERNAME=invoice_app
 DATABASE_PASSWORD=your_password
@@ -180,49 +214,61 @@ DATABASE_PASSWORD=your_password
 
 Use your own database credentials.
 
-### 3. Start the application
+**Note:** The hostname `postgres` refers to the PostgreSQL service inside Docker Compose. If you run the backend directly on your machine instead of inside Docker, use `localhost` as the database hostname.
 
-```bash
+### 3. Build and Start the Application
+
+```powershell
 docker compose up --build -d
 ```
 
-Docker Compose starts the PostgreSQL database and builds the application image.
+Docker Compose starts PostgreSQL and builds the application.
 
-The frontend and backend are served through the same application.
+The Dockerfile uses a multi-stage build:
 
-Access the application at:
+1. Node.js 22 builds the React frontend.
+2. Eclipse Temurin 21 JDK builds the Spring Boot application and packages the frontend static files.
+3. Eclipse Temurin 21 JRE runs the final application image.
 
-```text
+The final container runs the Spring Boot application as a non-root user (`appuser`), following the principle of least privilege.
+
+### 4. Access the Application
+
+Open:
+
+```
 http://localhost:8080
 ```
 
-### 4. Stop the application
+The frontend and backend are served by the same Spring Boot application.
 
-```bash
+### 5. Stop the Application
+
+```powershell
 docker compose down
 ```
 
-To remove containers and associated volumes:
-
-```bash
-docker compose down -v
-```
-
-**Warning:** Removing database volumes permanently deletes their stored data.
+This stops and removes the containers. The current Compose configuration does not declare a named PostgreSQL volume, so database persistence across container removal is not configured.
 
 ## Running Tests
 
-Execute the automated tests using Maven Wrapper:
+Run the automated tests using the Maven Wrapper:
 
-```bash
+```powershell
 ./mvnw test
 ```
 
-The project uses JUnit 5 and Mockito to validate service-layer behavior, including interactions with mocked repositories and dependent services.
+The project uses JUnit 5 and Mockito for unit testing service-layer behavior, including:
+
+- Verifying product registration and repository interactions.
+- Validating invoice response generation.
+- Testing response generation with multiple products.
+
+The Docker build currently uses `-DskipTests`, so tests are not executed during image construction.
 
 ## Project Structure
 
-```text
+```
 purchase_invoices/
 ├── docs/
 │   └── demo.gif
@@ -254,13 +300,3 @@ purchase_invoices/
 ├── pom.xml
 └── README.md
 ```
-
-## Author
-
-**Kaiky Bitencourt**
-
-- GitHub: [@Kaikybiten](https://github.com/Kaikybiten)
-
----
-
-Developed as a full-stack project focused on Java, Spring Boot, REST APIs, React, PostgreSQL, and automated testing.
