@@ -54,8 +54,8 @@ RUN groupadd --system appgroup && \
 COPY --from=backend-build --chown=appuser:appgroup \
     /app/target/purchase_invoices-0.0.1-SNAPSHOT.jar app.jar
 
-# Copia o JAR gerado na etapa anterior
-COPY --from=backend-build /app/target/purchase_invoices-0.0.1-SNAPSHOT.jar app.jar
+# Executa a aplicação como usuário não-root
+USER appuser
 
 # Porta da aplicação
 EXPOSE 8080
