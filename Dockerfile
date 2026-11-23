@@ -23,7 +23,7 @@ RUN npm run build
 # --- Build do Spring Boot ---
 
 # Imagem do Java e etapa atual 'backend-build'
-FROM eclipse-temurin:17-jdk AS backend-build
+FROM eclipse-temurin:21-jde AS backend-build
 
 # Local de trabalho dentro do container
 WORKDIR /app
@@ -41,7 +41,7 @@ RUN ./mvnw clean package -DskipTests
 
 # --- Imagem final ---
 
-FROM eclipse-temurin:17-jre
+FROM eclipse-temurin:21-jre
 
 # Local de trabalho dentro do container
 WORKDIR /app

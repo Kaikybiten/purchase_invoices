@@ -6,7 +6,6 @@ import com.example.purchase_invoices.model.Invoice;
 import com.example.purchase_invoices.model.Product;
 import com.example.purchase_invoices.model.RecordedPurchases;
 import com.example.purchase_invoices.repository.RecordedPurchasesRepository;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -14,15 +13,20 @@ import java.util.List;
 @Service
 public class RecordedPurchasesService {
 
-    @Autowired
-    private RecordedPurchasesRepository recordedPurchasesRepository;
+    private final RecordedPurchasesRepository recordedPurchasesRepository;
+    private final ProductService productService;
+    private final InvoiceService invoiceService;
 
-    @Autowired
-    private ProductService productService;
 
-    @Autowired
-    private InvoiceService invoiceService;
-
+    public RecordedPurchasesService (
+        RecordedPurchasesRepository recordedPurchasesRepository,
+        ProductService productService,
+        InvoiceService invoiceService
+    ) {
+        this.recordedPurchasesRepository = recordedPurchasesRepository;
+        this.productService = productService;
+        this.invoiceService = invoiceService;
+    }
 
     private void saveInvoice(List<RecordedPurchases> recordedPurchases) {
 
@@ -51,7 +55,7 @@ public class RecordedPurchasesService {
     public InvoiceResponse toResponse(
             List<RecordedPurchases> purchases
     ) {
-        Invoice invoice = purchases.get(0).getInvoice();
+        Invoice invoice = purchases.getFirst().getInvoice();
 
         invoiceService.save(invoice);
 

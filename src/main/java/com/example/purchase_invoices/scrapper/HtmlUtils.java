@@ -10,9 +10,9 @@ public class HtmlUtils {
         return new BigDecimal(value.trim().replace(",", "."));
     }
 
-    Matcher validateMatcher(String td, String patern) {
+    Matcher validateMatcher(String td, String stringPattern) {
 
-        Pattern pattern = Pattern.compile(patern);
+        Pattern pattern = Pattern.compile(stringPattern);
         return  pattern.matcher(td);
 
     }

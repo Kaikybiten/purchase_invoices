@@ -17,22 +17,25 @@ public class SecurityConfig {
         this.anonymousSessionFilter = anonymousSessionFilter;
     }
 
+    // Filtros primários de segurança
     @Bean
     public SecurityFilterChain defaultSecurityFilterChain(HttpSecurity http) {
 
-        http// Desativa CSRF para testar se ele está causando o 403
-                .csrf(AbstractHttpConfigurer::disable)
-                .authorizeHttpRequests(
-                        auth -> auth.anyRequest().permitAll()
-                )
-                .formLogin(AbstractHttpConfigurer::disable) // Desativando formulario
-                .httpBasic(AbstractHttpConfigurer::disable) // Não use usuário e senha enviados pelo HTTP Basic.
-                .addFilterBefore(
-                        // Adiciona o AnonymousSessionFilter à cadeia de filtros, antes do UsernamePasswordAuthenticationFilter
-                        anonymousSessionFilter,
-                        // Assim, a verificação da sessão acontece antes do processamento da autenticação por formulário de usuário e senha.
-                        UsernamePasswordAuthenticationFilter.class
-                );
+        // Configurações de autorização
+        http.authorizeHttpRequests(
+            auth -> auth // Objeto usado para definir as regras
+                .anyRequest().permitAll() // Permite acesso inicial - Será autenticada pelos filtros
+        )
+        .formLogin(AbstractHttpConfigurer::disable) // Desativando formulário
+        .httpBasic(AbstractHttpConfigurer::disable) // Não use usuário e senha enviados pelo HTTP Basic.
+        .addFilterBefore( // Cadeia de filtros
+
+            // Adiciona o AnonymousSessionFilter à cadeia de filtros, antes do UsernamePasswordAuthenticationFilter
+            anonymousSessionFilter,
+
+            // Assim, a verificação da sessão acontece antes do processamento da autenticação por formulário de usuário e senha.
+            UsernamePasswordAuthenticationFilter.class
+        );
 
         return http.build();
 

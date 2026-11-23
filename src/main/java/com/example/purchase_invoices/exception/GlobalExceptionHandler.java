@@ -1,7 +1,5 @@
 package com.example.purchase_invoices.exception;
 
-
-
 import jakarta.persistence.EntityNotFoundException;
 
 import org.springframework.http.HttpStatus;
@@ -27,10 +25,10 @@ import com.example.purchase_invoices.response.JsonResponse;
 @RestControllerAdvice
 public class GlobalExceptionHandler {
 
-    // Criando log para controle
+    // Criando ‘log’ para controle
     private static final Logger log = LoggerFactory.getLogger(GlobalExceptionHandler.class);
 
-    // Metodo para capturar exceções de argumentos invalidos
+    // Método para capturar exceções de argumentos inválidos
     @ExceptionHandler(MethodArgumentNotValidException.class)
     public ResponseEntity<JsonResponse<List<DataError>>> handleMethodArgumentNotValidException(
             MethodArgumentNotValidException exception
@@ -72,7 +70,7 @@ public class GlobalExceptionHandler {
         );
     }
 
-    // Metodo para capturar exceções de requisão não localizada
+    // Método para capturar exceções de requires não localizada
     @ExceptionHandler(EntityNotFoundException.class)
     public ResponseEntity<JsonResponse<Void>> handleMethodNotFoundException(
             EntityNotFoundException exception

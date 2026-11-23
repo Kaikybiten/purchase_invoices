@@ -8,6 +8,6 @@ import java.util.List;
 // Conexão com o banco de dados
 public interface ProductRepository extends JpaRepository<Product, Long> {
 
-    // Find by 'code' in (codes), Identifica 'code' em @Entity e utiliza a referencia para busca-lo no banco
+    // Find by 'code' in (codes), Identifica 'code' em @Entity e utiliza a referência para buscá-lo no banco
     List<Product> findByCodeIn(List<String> codes);
 }

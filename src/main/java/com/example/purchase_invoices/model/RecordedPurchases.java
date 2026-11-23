@@ -33,6 +33,10 @@ public class RecordedPurchases {
     @Column(name = "purchase_date")
     private LocalDate purchaseDate;
 
+    public RecordedPurchases () {
+
+    }
+
     public RecordedPurchases(
             Invoice invoice, Product product, BigDecimal totalPrice, BigDecimal quantity, LocalDate purchaseDate
     ) {

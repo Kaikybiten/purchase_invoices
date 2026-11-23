@@ -15,7 +15,7 @@ public class ValidationConfig {
 
         // Codificação das mensagens
         messageSource.setDefaultEncoding("UTF-8");
-        // Arquivo com as variaveis referenciando as mensagens de validação
+        // Arquivo com as variáveis referenciando as mensagens de validação
         messageSource.setBasename("classpath:ValidationMessages");
 
         return messageSource; // Retornando fonte das mensagens já configurada
@@ -27,7 +27,7 @@ public class ValidationConfig {
         // Objeto que lê as anotações de validação (@NotBlank, @Max, @NotNull, @Positive)
         LocalValidatorFactoryBean localValidatorFactoryBean = new LocalValidatorFactoryBean();
 
-        // Definindo fonte das mensagens de retorno do validador
+        // Definindo fonte das mensagens de retorno do validator
         localValidatorFactoryBean.setValidationMessageSource(messageSource());
 
         return localValidatorFactoryBean;

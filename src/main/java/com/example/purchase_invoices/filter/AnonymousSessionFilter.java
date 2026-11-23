@@ -24,6 +24,7 @@ public class AnonymousSessionFilter extends OncePerRequestFilter {
 
     @Override
     protected boolean shouldNotFilter(HttpServletRequest request) {
+
         String path = request.getServletPath(); // Caminho da solicitação
 
         // Se for diferente dos caminhos abaixo pode seguir sem autenticação
@@ -37,10 +38,10 @@ public class AnonymousSessionFilter extends OncePerRequestFilter {
     protected void doFilterInternal(
             HttpServletRequest request,
             @NonNull HttpServletResponse response,
-            @NonNull FilterChain filterChain)
-            throws ServletException, IOException {
+            @NonNull FilterChain filterChain
+    ) throws ServletException, IOException {
 
-        // Obtem sessão - 'false' = obtenha a sessão existente, mas não crie uma nova
+        // Obtém sessão - 'false' = obtenha a sessão existente, mas não crie uma
         HttpSession session = request.getSession(false);
 
         // Nenhuma sessão localizada.

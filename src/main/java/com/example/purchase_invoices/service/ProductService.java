@@ -3,7 +3,6 @@ package com.example.purchase_invoices.service;
 import com.example.purchase_invoices.model.RecordedPurchases;
 import com.example.purchase_invoices.repository.ProductRepository;
 import jakarta.persistence.EntityNotFoundException;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
@@ -16,8 +15,12 @@ import com.example.purchase_invoices.model.Product;
 @Service
 public class ProductService {
 
-    @Autowired
-    private ProductRepository productRepository;
+    private final ProductRepository productRepository;
+
+    public ProductService (ProductRepository productRepository) {
+
+        this.productRepository = productRepository;
+    }
 
     private List<Product> addNewProduct(
             List<Product> existingProducts,
@@ -38,7 +41,7 @@ public class ProductService {
                                 BigDecimal unitPrice = existing.getUnitPrice();
 
                                 return code.equals(product.getCode())
-                                        && unitPrice.compareTo(product.getUnitPrice()) == 0;
+                                    && unitPrice.compareTo(product.getUnitPrice()) == 0;
                             }
 
                             // Retorne o primeiro localizado, caso contrario retorne null
@@ -50,7 +53,7 @@ public class ProductService {
                 continue;
             }
 
-            // Valida como novo produto e registra novo produto no banco da dados
+            // Valida como novo produto e registra novo produto no banco de dados
             product.setValid(true);
             newProducts.add(product);
         }

@@ -26,17 +26,17 @@ public class RateLimitFilter extends OncePerRequestFilter {
         this.objectMapper = objectMapper;
     }
 
-    // String - IP do cliente
-    // Bucket - Reservatório de tokens para controlar as requisições
+    // ‘String’ - IP do cliente
+    // Bucket - Reservatório de ‘tokens’ para controlar as requisições
     private final Map<String, Bucket> buckets = new ConcurrentHashMap<>();
 
 
     private Bucket createBucket() {
 
-        // Construindo consumo de tokens
+        // Construindo consumo de ‘tokens’
         Bandwidth limit = Bandwidth.builder()
-                .capacity(3) // Maximo 3 tokens
-                .refillIntervally(3, Duration.ofMinutes(1)) // Adiciona 3 tokens a cada 1 minuto
+                .capacity(3) // Maximo 3 ‘tokens’
+                .refillIntervally(3, Duration.ofMinutes(1)) // Adiciona 3 ‘tokens’ a cada 1 minuto
                 .build();
 
         // Retornando Bucket configurado
@@ -72,7 +72,7 @@ public class RateLimitFilter extends OncePerRequestFilter {
                 key -> createBucket()
         );
 
-        // Se houver token disponivel, consome ele
+        // Se houver ‘token’ disponível, consome ele
         if (bucket.tryConsume(1)) {
             filterChain.doFilter(request, response);
             return;

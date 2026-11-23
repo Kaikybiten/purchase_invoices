@@ -58,7 +58,7 @@ public class HtmlExtractor {
     String validateRefCode(Element tr) {
         String td = readTd(tr, "span.RCod");
 
-        // (.*?) = Obtem todos os caracteres entre : e ), '?' garante uma unica ocorrencia
+        // (.*?) = Obtém todos os caracteres entre ':' e ')', '?' garante uma unica ocorrência
         Matcher matcher = htmlUtils.validateMatcher(td, "\\:(.*?)\\)");
 
         if (matcher.find())  return matcher.group(1).trim();

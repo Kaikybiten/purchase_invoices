@@ -7,7 +7,7 @@ import com.example.purchase_invoices.response.JsonResponse;
 import com.example.purchase_invoices.scrapper.ReaderHTML;
 import com.example.purchase_invoices.service.InvoiceService;
 import com.example.purchase_invoices.service.RecordedPurchasesService;
-import org.springframework.beans.factory.annotation.Autowired;
+
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -18,11 +18,17 @@ import java.util.List;
 @RequestMapping("/invoices")
 public class RecordedPurchasesController {
 
-    @Autowired
-    private RecordedPurchasesService recordedPurchasesService;
+    private final RecordedPurchasesService recordedPurchasesService;
 
-    @Autowired
-    private InvoiceService invoiceService;
+    private final InvoiceService invoiceService;
+
+    public RecordedPurchasesController (
+        RecordedPurchasesService recordedPurchasesService,
+        InvoiceService invoiceService
+    ) {
+        this.recordedPurchasesService = recordedPurchasesService;
+        this.invoiceService = invoiceService;
+    }
 
     @PostMapping
     public ResponseEntity<JsonResponse<InvoiceResponse>> postProduct(
@@ -37,11 +43,11 @@ public class RecordedPurchasesController {
             );
         }
 
-        String accessToken = purchasesList.get(0).getInvoice().getAccessToken().trim();
+        String accessToken = purchasesList.getFirst().getInvoice().getAccessToken().trim();
 
         if (invoiceService.existsByAccessToken(accessToken)) {
             return ResponseEntity.status(HttpStatus.CONFLICT).body(
-                    JsonResponse.error("A nota informada já foi registrada.")
+                    JsonResponse.error("Já existe um nota com esses dados registrada. Verifique se não foi um cadastro duplicado.")
             );
         }
 

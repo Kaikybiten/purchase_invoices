@@ -1,6 +1,5 @@
 package com.example.purchase_invoices.controller;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -16,8 +15,11 @@ import java.util.List;
 @RequestMapping("/product")
 public class ProductController {
 
-    @Autowired
-    private ProductService productService;
+    private final ProductService productService;
+
+    public ProductController (ProductService productService){
+        this.productService = productService;
+    }
 
     @GetMapping
     public ResponseEntity<JsonResponse<List<Product>>> getProduct() {

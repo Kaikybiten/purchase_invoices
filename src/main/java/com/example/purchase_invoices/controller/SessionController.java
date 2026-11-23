@@ -13,7 +13,7 @@ import java.util.Map;
 public class SessionController {
 
     @PostMapping
-    public ResponseEntity<?> createSession(HttpServletRequest request) {
+    public ResponseEntity<Map<String, String>> createSession(HttpServletRequest request) {
 
         // Cria sessão
         request.getSession(true);

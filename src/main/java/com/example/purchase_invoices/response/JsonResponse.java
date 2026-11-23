@@ -3,6 +3,7 @@ package com.example.purchase_invoices.response;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
 import java.time.LocalDateTime;
+import java.time.ZoneId;
 
 @JsonPropertyOrder({"success", "message", "timestamp", "data"})
 public class JsonResponse<T> {
@@ -15,7 +16,7 @@ public class JsonResponse<T> {
     private JsonResponse(boolean success, String message, T data) {
         this.success = success;
         this.message = message;
-        this.timestamp = LocalDateTime.now();
+        this.timestamp = LocalDateTime.now(ZoneId.of("America/Sao_Paulo"));
         this.data = data;
     }
 
